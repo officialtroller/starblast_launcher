@@ -290,10 +290,6 @@ function SteaminjectLoader() {
             let newnewrgs = newrgs[0].match(/[iI10OlL]{4,6}/g);
             src = src.replace(/for\(f=document\.queryselectorall\("\.option\s*input\[type=range\]"\),\s*i=function\(e\)\{.*?,1\)\}\)\}\}/gis, `for (f = document.querySelectorAll(".option input[type=range], .option input[type=color]"), i = function(e) {return function(i) {if(i.type === "range"){if (i.id === "emopacity") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = parseInt(i.value, 10), e.updateSettings(s, !0)})} else {if (i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = "0" === i.value ? t("Off") : Math.round(50 * i.value) + " %", e.updateSettings(s, !0)}), i.dispatchEvent(new Event("input")), "sounds" === i.id) return i.addEventListener("change", function (t) {return e.${newnewrgs[0]}.${newnewrgs[1]}.beep(4 + .2 * Math.random(), 1)})}} else if (i.type === "color") {if (i.id === "gemcolor1") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = window.SteamStorage.getGemColor1();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = window.SteamStorage.getGemColor1();} else if (i.id === "gemcolor2") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = window.SteamStorage.getGemColor2();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = window.SteamStorage.getGemColor2();}}}}`);
             src = src.replace('null!=e&&null!=this.client_version&&(e.innerText="Client Version: "+this.client_version)', `null != e && (e.innerText = 'Client Version: Steam 1.1.0')`);
-            let Clientecp = `case "GG": this.icon = "https://raw.githubusercontent.com/officialtroller/starblast-things/refs/heads/main/ecp/gg.png";break;\n`;
-            let Clientecp1 = `GG: "Xavi"`;
-            src = src.replace(/case\s*"pmf"\s*:\s*this\.icon\s*=\s*".*?";\s*break;/, '$&' + Clientecp);
-            src = src.replace(/seasonal\:"Seasonal"/i, '$&,' + Clientecp1);
             const titreg = src.match(/case\s*"titanium"\s*:(\w+)=t.createLinearGradient\(0,0,0,i\),[\s\S]*?;break;/);
             const defreg = src.match(/default:(\w+)=t\.createLinearGradient\(0,0,0,i\),\w+\.addColorStop\(0,"#EEE"\),\w+\.addColorStop\(1,"#666"\)/);
             src = src.replace('https://starblast.io/modsinfo.json', 'https://raw.githubusercontent.com/officialtroller/starblast-things/refs/heads/main/modsinfo.js');
@@ -498,10 +494,6 @@ function injectLoader() {
                         console.error(error);
                     }
                 }
-                let Clientecp = `case "GG": this.icon = "https://raw.githubusercontent.com/officialtroller/starblast-things/refs/heads/main/ecp/gg.png";break;\n`;
-                let Clientecp1 = `GG: "Xavi"`;
-                src = src.replace(/case\s*"pmf"\s*:\s*this\.icon\s*=\s*".*?";\s*break;/, '$&' + Clientecp);
-                src = src.replace(/seasonal\:"Seasonal"/i, '$&,' + Clientecp1);
                 src = src.replace(/\.toUpperCase\(\)/g, '');
                 src = src.replace(/text-transform:\s*uppercase;/gim, '');
                 src = src.replace('Elite Commander Pass', 'Noobiest Commander Pass');
@@ -846,10 +838,6 @@ function ECPinjectLoader() {
             src = src.replace(/this\.hue,\.5,.5/g, 'this.hue,1,1');
             src = src.replace('||(this.icon="https://starblast.io/ecp/gamepedia.png")', '||(this.icon=this.icon)');
             src = src.replace('NEW!', ' ');
-            let Clientecp = `case "GG": this.icon = "https://raw.githubusercontent.com/officialtroller/starblast-things/refs/heads/main/ecp/gg.png";break;\n`;
-            let Clientecp1 = `GG: "Xavi"`;
-            src = src.replace(/case\s*"pmf"\s*:\s*this\.icon\s*=\s*".*?";\s*break;/, '$&' + Clientecp);
-            src = src.replace(/seasonal\:"Seasonal"/i, '$&,' + Clientecp1);
             src = src.replace(/\.toUpperCase\(\)/g, '');
             src = src.replace(/text-transform:\s*uppercase;/gim, '');
             src = src.replace(/"blank"\s*!==\s*this\.custom\.badge/, '""!==this.custom.badge');
