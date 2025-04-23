@@ -1,0 +1,15 @@
+{
+  "name": "starblast-launcher",
+  "version": "1.0.0",
+  "description": "Starblast Launcher allows you to play all version's of Starblast, including the Steam Version, Standalone or Browser.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "none"
+  },
+  "author": "official_troller",
+  "license": "MIT",
+  "dependencies": {
+    "discord-rpc": "^4.0.1"
+  }
+}
