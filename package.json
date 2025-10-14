@@ -1,15 +1,56 @@
 {
   "name": "starblast-launcher",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Starblast Launcher allows you to play all version's of Starblast, including the Steam Version, Standalone or Browser.",
-  "main": "index.js",
+  "keywords": [
+    "starblast.io",
+    "launcher",
+    "mod"
+  ],
   "repository": {
     "type": "git",
     "url": "none"
   },
-  "author": "official_troller",
   "license": "MIT",
+  "author": "official_troller",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dist-win": "electron-builder --win"
+  },
   "dependencies": {
     "discord-rpc": "^4.0.1"
-  }
+  },
+  "devDependencies": {
+    "electron": "^38.2.2",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+        "appId": "com.officialtroller.starblast-launcher",
+        "productName": "Starblast Launcher",
+        "files": [
+            "node_modules/",
+            "index.js",
+            "index.html",
+            "logo.svg",
+            "sb_background.jpg",
+            "steam.js",
+            "img.ico"
+        ],
+        "win": {
+            "target": [
+                "nsis"
+            ],
+            "icon": "img.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "installerIcon": "img.ico",
+            "uninstallerIcon": "img.ico",
+            "uninstallDisplayName": "Uninstaller",
+            "license": "license.md",
+            "allowToChangeInstallationDirectory": true
+        }
+    }
 }

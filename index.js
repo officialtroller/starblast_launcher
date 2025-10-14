@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, globalShortcut } = require('electron');
 const DiscordRPC = require('discord-rpc');
 const path = require('path');
-const ClientID = '1330980896186306680';
+const ClientID = '1398416103838978259';
 const rpc = new DiscordRPC.Client({ transport: 'ipc' });
 
 rpc.on('ready', () => {
@@ -87,58 +87,91 @@ ipcMain.on('quit', () => {
 ipcMain.on('toggle_fullscreen', () => {
     mainWindow.setFullScreen(!mainWindow.isFullScreen());
 });
-
+let InterValID = null;
 ipcMain.on('start-browser', () => {
-    mainWindow.loadURL('https://starblast.io/');
-    rpc.setActivity({
-        startTimestamp: Math.floor(Date.now() / 1000),
-        largeImageKey: 'img',
-        largeImageText: 'Starblast Launcher',
-        details: 'in Browser Client',
-    }).catch(console.error);
+    launchClient('Browser', 'https://starblast.io/#', null);
 });
 
 ipcMain.on('start-ecp', () => {
-    mainWindow.loadURL('https://starblast.io/app.html?ecp');
-    rpc.setActivity({
-        startTimestamp: Math.floor(Date.now() / 1000),
-        largeImageKey: 'img',
-        largeImageText: 'Starblast Launcher',
-        details: 'in Standalone Client',
-    }).catch(console.error);
+    launchClient('Standalone', 'https://starblast.io/app.html?ecp#', /app\.html\?ecp/);
 });
 
 ipcMain.on('start-steam', () => {
-    mainWindow.loadURL('https://starblast.io/app.html?steam');
+    launchClient('Steam', 'https://starblast.io/app.html?steam#', /app\.html\?steam/);
+});
+
+function launchClient(clientType, url, urlReplaceRegex) {
+    mainWindow.loadURL(url);
+    mainWindow.webContents.once('did-finish-load', async () => {
+        const TimeStamp = Math.floor(Date.now() / 1000);
+        if (InterValID) clearInterval(InterValID);
+
+        InterValID = setInterval(async () => {
+            try {
+                let isInGame;
+                switch (clientType) {
+                    case 'Browser':
+                        isInGame = await mainWindow.webContents.executeJavaScript(
+                            `"/" == window.location.pathname && "welcome" != Object.values(window.module.exports.settings).find(e => e && e.mode).mode.id && "https://starblast.io/#" != window.location.href`
+                        );
+                        break;
+                    case 'Standalone':
+                        isInGame = await mainWindow.webContents.executeJavaScript(
+                            `"/app.html" == window.location.pathname && "welcome" != Object.values(window.module.exports.settings).find(e => e && e.mode).mode.id && "https://starblast.io/app.html?ecp#" != window.location.href`
+                        );
+                        break;
+                    case 'Steam':
+                        isInGame = await mainWindow.webContents.executeJavaScript(
+                            `"/app.html" == window.location.pathname && "welcome" != Object.values(window.module.exports.settings).find(e => e && e.mode).mode.id && "https://starblast.io/app.html?steam#" != window.location.href`
+                        );
+                        break;
+                    default:
+                        break;
+                }
+
+                let state = 'On Homepage';
+                let smallImageKey;
+                let mode, newstate, modeId;
+
+                if (isInGame) {
+                    mode = await mainWindow.webContents.executeJavaScript(
+                        `Object.values(window.module.exports.settings).find(e => e && e.mode).mode.game_info?.name||Object.values(window.module.exports.settings).find(e => e && e.mode).mode.name;`
+                    );
+                    newstate = await mainWindow.webContents.executeJavaScript(`Object.values(window.module.exports.settings).find(e => e && e.mode).mode.name;`);
+                    modeId = await mainWindow.webContents.executeJavaScript(`Object.values(window.module.exports.settings).find(e => e && e.mode).mode.id;`);
+
+                    const imageKeys = {
+                        survival: 'survival',
+                        team: 'team',
+                        invasion: 'invasion',
+                        deathmatch: 'pdm',
+                        modding: 'modding',
+                    };
+                    smallImageKey = imageKeys[modeId];
+                    state = `${newstate}`;
+                }
+
+                const activity = {
+                    details: `in ${clientType} Client`,
+                    state: mode ? 'on ' + mode : undefined,
+                    largeImageKey: 'img',
+                    smallImageKey: smallImageKey || undefined,
+                    smallImageText: state || undefined,
+                    startTimestamp: TimeStamp,
+                    buttons: isInGame ? [{ label: 'Join Game!', url: mainWindow.webContents.getURL().replace(urlReplaceRegex, '') }] : undefined,
+                };
+
+                rpc.setActivity(activity).catch(console.error);
+            } catch (err) {
+                console.error(`[${clientType}] Rich Presence update failed:`, err);
+            }
+        }, 3000);
+    });
+
     rpc.setActivity({
         startTimestamp: Math.floor(Date.now() / 1000),
         largeImageKey: 'img',
         largeImageText: 'Starblast Launcher',
-        details: 'in Steam Client',
+        details: `in ${clientType} Client`,
     }).catch(console.error);
-});
-
-async function createfakewindow() {
-    if (mainWindow) {
-        console.log('Window already exists. Skipping creation.');
-        return;
-    }
-    console.log('Creating new window...');
-    mainWindow = new BrowserWindow({
-        width: 1280,
-        height: 720,
-        fullscreen: true,
-        frame: false,
-        webPreferences: {
-            nodeIntegration: false,
-            webSecurity: false,
-            allowRunningInsecureContent: true,
-            contextIsolation: false,
-            nodeIntegrationInSubFrames: true,
-            preload: path.join(__dirname, 'steam.js'),
-        },
-    });
-
-    mainWindow.loadURL('https://starblast.io/app.html?steam');
-    mainWindow.webContents.openDevTools();
 }
