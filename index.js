@@ -4,15 +4,6 @@ const path = require('path');
 const ClientID = '1398416103838978259';
 const rpc = new DiscordRPC.Client({ transport: 'ipc' });
 
-rpc.on('ready', () => {
-    console.log('Discord RPC connected');
-    rpc.setActivity({
-        startTimestamp: Math.floor(Date.now() / 1000),
-        largeImageKey: 'img',
-        largeImageText: 'Starblast Launcher',
-    }).catch(console.error);
-});
-
 rpc.login({ clientId: ClientID }).catch(error => console.log(`Discord RPC login error: ${error.message}`));
 
 process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
@@ -101,6 +92,13 @@ ipcMain.on('start-steam', () => {
 });
 
 function launchClient(clientType, url, urlReplaceRegex) {
+    let ButtonCheck = false;
+    ipcMain.on('richPresence', (event, value) => {
+        if (ButtonCheck != value) {
+            console.log(`Received Change: ${ButtonCheck} -> ${value}`);
+            ButtonCheck = value;
+        }
+    });
     mainWindow.loadURL(url);
     mainWindow.webContents.once('did-finish-load', async () => {
         const TimeStamp = Math.floor(Date.now() / 1000);
@@ -151,17 +149,15 @@ function launchClient(clientType, url, urlReplaceRegex) {
                     state = `${newstate}`;
                 }
 
-                const activity = {
+                rpc.setActivity({
                     details: `in ${clientType} Client`,
                     state: mode ? 'on ' + mode : undefined,
                     largeImageKey: 'img',
                     smallImageKey: smallImageKey || undefined,
                     smallImageText: state || undefined,
                     startTimestamp: TimeStamp,
-                    buttons: isInGame ? [{ label: 'Join Game!', url: mainWindow.webContents.getURL().replace(urlReplaceRegex, '') }] : undefined,
-                };
-
-                rpc.setActivity(activity).catch(console.error);
+                    buttons: isInGame && ButtonCheck ? [{ label: 'Join Game!', url: mainWindow.webContents.getURL().replace(urlReplaceRegex, '') }] : undefined,
+                }).catch(console.error);
             } catch (err) {
                 console.error(`[${clientType}] Rich Presence update failed:`, err);
             }

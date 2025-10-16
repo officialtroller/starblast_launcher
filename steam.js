@@ -1,8 +1,8 @@
 let has_run = false;
 let has_injected = false;
 const { contextBridge, ipcRenderer } = require('electron');
-class SteamStorage {
-    getGemColor1() {
+contextBridge.exposeInMainWorld('SteamStorage', {
+    getGemColor1: () => {
         try {
             const gemcolor1 = localStorage.getItem('gemcolor1');
             if (gemcolor1) {
@@ -15,18 +15,8 @@ class SteamStorage {
             localStorage.setItem('gemcolor1', '"#ff0000"');
             return '#ff0000';
         }
-    }
-
-    getEmotes() {
-        try {
-            return JSON.parse(localStorage.getItem('emopacity'));
-        } catch (_) {
-            localStorage.setItem('emopacity', '"4"');
-            return '4';
-        }
-    }
-
-    getGemColor2() {
+    },
+    getGemColor2: () => {
         try {
             const gemcolor2 = localStorage.getItem('gemcolor2');
             if (gemcolor2) {
@@ -39,9 +29,16 @@ class SteamStorage {
             localStorage.setItem('gemcolor2', '"#ff8080"');
             return '#ff8080';
         }
-    }
-
-    enableScrollEvents() {
+    },
+    getEmotes: () => {
+        try {
+            return JSON.parse(localStorage.getItem('emopacity'));
+        } catch (_) {
+            localStorage.setItem('emopacity', '"4"');
+            return '4';
+        }
+    },
+    enableScrollEvents: () => {
         const addScrollListener = selector => {
             const titleElement = document.querySelector(`div.customfield[data-type="${selector}"] > .title`);
             if (titleElement) {
@@ -61,98 +58,34 @@ class SteamStorage {
         };
 
         ['badge', 'finish', 'laser'].forEach(addScrollListener);
-    }
-}
-class ECPStorage {
-    getGemColor1() {
-        try {
-            const gemcolor1 = localStorage.getItem('gemcolor1');
-            if (gemcolor1) {
-                return JSON.parse(gemcolor1);
-            } else {
-                localStorage.setItem('gemcolor1', '"#ff0000"');
-                return '#ff0000';
-            }
-        } catch (_) {
-            localStorage.setItem('gemcolor1', '"#ff0000"');
-            return '#ff0000';
-        }
-    }
-
-    getGemColor2() {
-        try {
-            const gemcolor2 = localStorage.getItem('gemcolor2');
-            if (gemcolor2) {
-                return JSON.parse(gemcolor2);
-            } else {
-                localStorage.setItem('gemcolor2', '"#ff8080"');
-                return '#ff8080';
-            }
-        } catch (_) {
-            localStorage.setItem('gemcolor2', '"#ff8080"');
-            return '#ff8080';
-        }
-    }
-    getEmotes() {
-        try {
-            return JSON.parse(localStorage.getItem('emopacity'));
-        } catch (_) {
-            localStorage.setItem('emopacity', '"4"');
-            return '4';
-        }
-    }
-
-    enableScrollEvents() {
-        const addScrollListener = selector => {
-            const titleElement = document.querySelector(`div.customfield[data-type="${selector}"] > .title`);
-            if (titleElement) {
-                titleElement.addEventListener('wheel', e => {
-                    const rightArrow = document.querySelector(`div.customfield[data-type="${selector}"] > i.fa.fa-caret-right`);
-                    const leftArrow = document.querySelector(`div.customfield[data-type="${selector}"] > i.fa.fa-caret-left`);
-
-                    if (e.deltaY < 1 && rightArrow) {
-                        rightArrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: false, cancelable: true }));
-                    } else if (e.deltaY > 1 && leftArrow) {
-                        leftArrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: false, cancelable: true }));
-                    }
-
-                    e.stopPropagation();
-                });
-            }
-        };
-
-        ['badge', 'finish', 'laser'].forEach(addScrollListener);
-    }
-}
-class BrowserStorage {
-    getGem1() {
+    },
+});
+contextBridge.exposeInMainWorld('BrowserStorage', {
+    getGem1: () => {
         try {
             return JSON.parse(localStorage.getItem('gemindeed'));
         } catch (_) {
             localStorage.setItem('gemindeed', '"#ff0000"');
             return '#ff0000';
         }
-    }
-
-    getGem2() {
+    },
+    getGem2: () => {
         try {
             return JSON.parse(localStorage.getItem('gemindeed1'));
         } catch (_) {
             localStorage.setItem('gemindeed1', '"#ff8080"');
             return '#ff8080';
         }
-    }
-
-    getEmotes() {
+    },
+    getEmotes: () => {
         try {
             return JSON.parse(localStorage.getItem('emopacity'));
         } catch (_) {
             localStorage.setItem('emopacity', '"4"');
             return '4';
         }
-    }
-
-    enableScrollEvents() {
+    },
+    enableScrollEvents: () => {
         const addScrollListener = (selector, rightArrowSelector, leftArrowSelector) => {
             const element = document.querySelector(selector);
             if (element) {
@@ -200,14 +133,8 @@ class BrowserStorage {
             'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(3) > i.fa.fa-caret-right',
             'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(3) > i.fa.fa-caret-left'
         );
-    }
-}
-
-class electronAPI {
-    sendMessage(msg) {
-        ipcRenderer.send(msg);
-    }
-}
+    },
+});
 
 contextBridge.exposeInMainWorld('adjustColor', (hex, percent) => {
     if (!/^#?[0-9A-Fa-f]{6}$/.test(hex)) return hex;
@@ -224,27 +151,68 @@ contextBridge.exposeInMainWorld('adjustColor', (hex, percent) => {
 
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 });
-
-contextBridge.exposeInMainWorld('BrowserStorage', {
-    getGem1: () => new BrowserStorage().getGem1(),
-    getGem2: () => new BrowserStorage().getGem2(),
-    getEmotes: () => new BrowserStorage().getEmotes(),
-    enableScrollEvents: () => new BrowserStorage().enableScrollEvents(),
-});
-contextBridge.exposeInMainWorld('SteamStorage', {
-    getGemColor1: () => new SteamStorage().getGemColor1(),
-    getGemColor2: () => new SteamStorage().getGemColor2(),
-    getEmotes: () => new SteamStorage().getEmotes(),
-    enableScrollEvents: () => new SteamStorage().enableScrollEvents(),
-});
 contextBridge.exposeInMainWorld('ECPStorage', {
-    getGemColor1: () => new ECPStorage().getGemColor1(),
-    getGemColor2: () => new ECPStorage().getGemColor2(),
-    getEmotes: () => new ECPStorage().getEmotes(),
-    enableScrollEvents: () => new ECPStorage().enableScrollEvents(),
+    getGemColor1: () => {
+        try {
+            const gemcolor1 = localStorage.getItem('gemcolor1');
+            if (gemcolor1) {
+                return JSON.parse(gemcolor1);
+            } else {
+                localStorage.setItem('gemcolor1', '"#ff0000"');
+                return '#ff0000';
+            }
+        } catch (_) {
+            localStorage.setItem('gemcolor1', '"#ff0000"');
+            return '#ff0000';
+        }
+    },
+    getGemColor2: () => {
+        try {
+            const gemcolor2 = localStorage.getItem('gemcolor2');
+            if (gemcolor2) {
+                return JSON.parse(gemcolor2);
+            } else {
+                localStorage.setItem('gemcolor2', '"#ff8080"');
+                return '#ff8080';
+            }
+        } catch (_) {
+            localStorage.setItem('gemcolor2', '"#ff8080"');
+            return '#ff8080';
+        }
+    },
+    getEmotes: () => {
+        try {
+            return JSON.parse(localStorage.getItem('emopacity'));
+        } catch (_) {
+            localStorage.setItem('emopacity', '"4"');
+            return '4';
+        }
+    },
+    enableScrollEvents: () => {
+        const addScrollListener = selector => {
+            const titleElement = document.querySelector(`div.customfield[data-type="${selector}"] > .title`);
+            if (titleElement) {
+                titleElement.addEventListener('wheel', e => {
+                    const rightArrow = document.querySelector(`div.customfield[data-type="${selector}"] > i.fa.fa-caret-right`);
+                    const leftArrow = document.querySelector(`div.customfield[data-type="${selector}"] > i.fa.fa-caret-left`);
+
+                    if (e.deltaY < 1 && rightArrow) {
+                        rightArrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: false, cancelable: true }));
+                    } else if (e.deltaY > 1 && leftArrow) {
+                        leftArrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: false, cancelable: true }));
+                    }
+
+                    e.stopPropagation();
+                });
+            }
+        };
+
+        ['badge', 'finish', 'laser'].forEach(addScrollListener);
+    },
 });
 contextBridge.exposeInMainWorld('electronAPI', {
-    sendMessage: msg => new electronAPI().sendMessage(msg),
+    sendMessage: msg => ipcRenderer.send(msg),
+    DiscordActive: () => ipcRenderer.send('richPresence', localStorage.getItem('richPresence') === 'true'),
 });
 
 function waitForWindow() {
@@ -359,15 +327,6 @@ function SteaminjectLoader() {
             const mapregex = src.match(/t\.prototype\.buildCarbonMaterial.*?map\:[iI10OlL]{5}/);
             const mapvalue = mapregex[0].match(/[iI10OlL]{5}/);
             const emissiveregex = src.match(/emissive\:[iI10OlL]{5}/);
-            const brugs = src.match(/(.)\.([iI10OlL]{5})\.([iI10OlL]{5})\.custom\[(.)\]=(.)\[(.)\]/);
-            src = src.replace(
-                `indexOf(${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[4]}]),`,
-                `indexOf(${brugs[4]} === "laser" && ${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[4]}].includes("!") ? ${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[1]}].split("!")[0] : ${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[1]}]),`
-            );
-            src = src.replace(
-                brugs[0] + ',',
-                `${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[4]}] = ${brugs[4]} === "laser" ? ${brugs[5]}[${brugs[6]}] + "!" + JSON.parse(localStorage.getItem("shpcolorr")) : ${brugs[5]}[${brugs[6]}],`
-            );
             const finishfunc = `t.prototype.fullbolor=function(){return this.material=new THREE.MeshPhongMaterial({map:${mapvalue},bumpMap:${mapvalue},specular:1052688,shininess:50,bumpScale:.1,color:(this.shipcolor != undefined) ? this.shipcolor : JSON.parse(localStorage.getItem('shpcolorr')),${emissiveregex}.hsvToRgbHex(this.hue, 1, 1),${carbonEmissiveMap}})},`;
             const finishcolor =
                 'case"shpcolorr":let color;if (this.laser.split("!")[1] == null){color = JSON.parse(localStorage.getItem("shpcolorr"))}else {color = this.laser.split("!")[1]}; for(s=t.createLinearGradient(0,0,0,i),h=Math.min(10,this.size/10),n=a=0,u=h-1;a<=u;n=a+=1)s.addColorStop(n/h,color),s.addColorStop((n+1)/h,window.adjustColor(color, 53));for(l=t.createLinearGradient(0,0,0,i),l.addColorStop(0,window.adjustColor(color, 20)),l.addColorStop(.1,window.adjustColor(color, 53)),n=o=0,d=h-1;o<=d;n=o+=1)l.addColorStop((n+.5)/h,color),l.addColorStop(Math.min(1,(n+1.5)/h),window.adjustColor(color, 53));break;';
@@ -381,10 +340,7 @@ function SteaminjectLoader() {
             src = src.replace(/t\.prototype\.([iI10OlL]{5})=function\((.)\)\{var\s*(.,.,.,.,.,.,.);(return\s*.=new)/i, 't.prototype.$1=function($2){var $3,custom,laserColor;$4');
             src = src.replace(/(.=new\s*[iI10OlL]{5}\(this\.[iI10OlL]{5}\.mode\.[iI10OlL]{5}\.ships_by_code\[.\.code\],.\/360)\),/i, '$1,null,null, laserColor),');
             const ggez = src.match(/,.=.\.hue,this\.[iI10OlL]{5}\.mode/)[0].match(/([iI10OlL]{5})/)[0];
-            src = src.replace(
-                /,.\.read\((.)\),/i,
-                `$&custom = this.${ggez}.names.getCustom($1.getUint8(1)),laserColor = custom?.laser?.includes("!") ? custom.laser.split("!")[1] : null,console.log("custom:",laserColor),`
-            );
+            src = src.replace(/,.\.read\((.)\),/i, `$&custom = this.${ggez}.names.getCustom($1.getUint8(1)),laserColor = custom?.laser?.includes("!") ? custom.laser.split("!")[1] : null,`);
             src = src.replace(/(this\.[iI10OlL]{5}=function\(\)\{function t\(t,e,i,s)(\)\{)var (.*?)if\(/, '$1,color$2var $3this.shipcolor = color != null ? color : null;if(');
             const ggezy = src.match(/(this\.laserticles\.[iI10OlL]{5}\.[iI10OlL]{5}\.)mode\.anonymous_ships/)[1];
             src = src.replace(/this\.laserticles\s*=\s*.,/, `$&this.ggcustom = ${ggezy}names.getCustom(this.shipid),`);
@@ -422,6 +378,7 @@ function SteaminjectLoader() {
             document.write(src);
             document.close();
             let script = `
+                    if (localStorage.getItem('richPresence') == null) localStorage.setItem('richPresence', true);
                     let sbibt = document.createElement('script');
                     sbibt.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/stationmodels.user.js';
                     document.body.appendChild(sbibt);
@@ -429,6 +386,7 @@ function SteaminjectLoader() {
                     script.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/weaponmodels.user.js';
                     document.body.appendChild(script);
                     window.module.exports.settings.parameters.selftag = { name: 'Self Ship Tag', value: !0, skipauto: !0, filter: 'default,app,mobile' };
+                    window.module.exports.settings.parameters.richPresence = { name: 'Discord Activity Button', value: true, skipauto: !0, filter: 'default,app,mobile' };
                     window.module.exports.settings.parameters.show_blank_badge = { name: 'Blank Badges', value: !0, skipauto: !0, filter: 'default,app,mobile' };
                     window.module.exports.settings.parameters.emopacity = { name:"Emote Capacity",value:SteamStorage.getEmotes(),skipauto:!0,type:"range",min:1,max:5,filter:"default,app,mobile"};
                     window.module.exports.settings.parameters.gemcolor1 = { name: 'Gem Color 1', value: SteamStorage.getGemColor1(), skipauto: true, type: 'color', filter: 'default,app,mobile' };
@@ -441,6 +399,16 @@ function SteaminjectLoader() {
                     }
                 }, 100);
             }
+                window.electronAPI.DiscordActive();
+                let lastValue = localStorage.getItem('richPresence');
+                const checkInterval = setInterval(() => {
+                    const currentValue = localStorage.getItem('richPresence');
+  
+                    if (currentValue !== lastValue) {
+                        lastValue = currentValue;
+                        window.electronAPI.DiscordActive();
+                    }
+                }, 300);
                     let gemcolor = setInterval(() => {
                     let CrystalObject;
                     for (let i in window) {
@@ -522,6 +490,7 @@ function SteaminjectLoader() {
                             } catch (_) {}
                     })();
                 }, 5000);
+                
                 let explolight = setInterval(() => {
                     if (window.Explosions != null) {
                         clearInterval(explolight);
@@ -601,7 +570,6 @@ function injectLoader() {
                 const mapregex = src.match(/t\.prototype\.buildCarbonMaterial.*?map\:[iI10OlL]{5}/);
                 const mapvalue = mapregex[0].match(/[iI10OlL]{5}/);
                 const emissiveregex = src.match(/emissive\:[iI10OlL]{5}/);
-                const brugs = src.match(/(.)\.([iI10OlL]{5})\.([iI10OlL]{5})\.custom\[(.)\]=(.)\[(.)\]/);
                 const ivalue = src.match(/(.)=this\.[iI10OlL]{5}\.names\.getcustom\(.\.[iI10OlL]{5}\.status\.id\)/i)[1];
                 const ggez = src.match(/,.=.\.hue,this\.[iI10OlL]{5}\.mode/)[0].match(/([iI10OlL]{5})/)[0];
                 const ggezy = src.match(/(this\.laserticles\.[iI10OlL]{5}\.[iI10OlL]{5}\.)mode\.anonymous_ships/)[1];
@@ -619,14 +587,6 @@ function injectLoader() {
                 src = src.replace(/(this\.[iI10OlL]{5}=function\(\)\{function t\(t,e,i,s)(\)\{)var (.*?)if\(/, '$1,color$2var $3this.shipcolor = color != null ? color : null;if(');
                 src = src.replace(/this\.laserticles\s*=\s*.,/, `$&this.ggcustom = ${ggezy}names.getCustom(this.shipid),`);
                 src = src.replace(/this\.type=.\.getUint/, 'this.type = this.ggcustom?.laser.includes("!") ? this.ggcustom.laser.split("!")[0] : t.getUint');
-                src = src.replace(
-                    brugs[0] + ',',
-                    `${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[4]}] = ${brugs[4]} === "laser" ? ${brugs[5]}[${brugs[6]}] + "!" + JSON.parse(localStorage.getItem("shpcolorr")) : ${brugs[5]}[${brugs[6]}],`
-                );
-                src = src.replace(
-                    `indexOf(${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[4]}]),`,
-                    `indexOf(${brugs[4]} === "laser" && ${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[4]}].includes("!") ? ${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[1]}].split("!")[0] : ${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[1]}]),`
-                );
                 src = src.replace(/case\s*"carbon"\s*:\s*this\.buildCarbonMaterial\(\);break;\n?/, '$&' + finishcheese);
                 src = src.replace(/t\.prototype\.buildCarbonMaterial\s*=\s*function\s*\([^)]*\)\s*{[^}]*}\)},/, '$&' + finishfunc);
                 src = src.replace(/case\s*"titanium"\s*:(s=t.createLinearGradient\(0,0,0,i\),[\s\S]*?);break;/, '$&' + finishcolor);
@@ -707,7 +667,7 @@ function injectLoader() {
                 );
                 src = src.replace(
                     /shake:\{[^{}]*\},/,
-                    '$&selftag:{name:"Self Ship Tag",value:!0,skipauto:!0,filter:"default,app,mobile"},show_blank_badge:{name:"Blank Badges",value:!0,skipauto:!0,filter:"default,app,mobile"},'
+                    '$&selftag:{name:"Self Ship Tag",value:!0,skipauto:!0,filter:"default,app,mobile"},show_blank_badge:{name:"Blank Badges",value:!0,skipauto:!0,filter:"default,app,mobile"},richPresence:{ name: "Discord Activity Button", value: true, skipauto: !0, filter: "default,app,mobile" },'
                 );
                 src = src.replace(
                     settingsregex,
@@ -731,6 +691,16 @@ function injectLoader() {
                     let script = document.createElement('script');
                     script.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/weaponmodels.user.js';
                     document.body.appendChild(script);
+                window.electronAPI.DiscordActive();
+                let lastValue = localStorage.getItem('richPresence');
+                const checkInterval = setInterval(() => {
+                    const currentValue = localStorage.getItem('richPresence');
+  
+                    if (currentValue !== lastValue) {
+                        lastValue = currentValue;
+                        window.electronAPI.DiscordActive();
+                    }
+                }, 300);
                     let pattern = /,(\s*"blank"\s*!={1,2}\s*this\.custom\.badge)/;
 
                 Search: for (let i in window) try {
@@ -1044,15 +1014,6 @@ function ECPinjectLoader() {
             const mapregex = src.match(/t\.prototype\.buildCarbonMaterial.*?map\:[iI10OlL]{5}/);
             const mapvalue = mapregex[0].match(/[iI10OlL]{5}/);
             const emissiveregex = src.match(/emissive\:[iI10OlL]{5}/);
-            const brugs = src.match(/(.)\.([iI10OlL]{5})\.([iI10OlL]{5})\.custom\[(.)\]=(.)\[(.)\]/);
-            src = src.replace(
-                `indexOf(${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[4]}]),`,
-                `indexOf(${brugs[4]} === "laser" && ${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[4]}].includes("!") ? ${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[1]}].split("!")[0] : ${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[1]}]),`
-            );
-            src = src.replace(
-                brugs[0] + ',',
-                `${brugs[1]}.${brugs[2]}.${brugs[3]}.custom[${brugs[4]}] = ${brugs[4]} === "laser" ? ${brugs[5]}[${brugs[6]}] + "!" + JSON.parse(localStorage.getItem("shpcolorr")) : ${brugs[5]}[${brugs[6]}],`
-            );
             const finishfunc = `t.prototype.fullbolor=function(){return this.material=new THREE.MeshPhongMaterial({map:${mapvalue},bumpMap:${mapvalue},specular:1052688,shininess:50,bumpScale:.1,color:(this.shipcolor != undefined) ? this.shipcolor : JSON.parse(localStorage.getItem('shpcolorr')),${emissiveregex}.hsvToRgbHex(this.hue, 1, 1),${carbonEmissiveMap}})},`;
             const finishcolor =
                 'case"shpcolorr":let color;if (this.laser.split("!")[1] == null){color = JSON.parse(localStorage.getItem("shpcolorr"))}else {color = this.laser.split("!")[1]}; for(s=t.createLinearGradient(0,0,0,i),h=Math.min(10,this.size/10),n=a=0,u=h-1;a<=u;n=a+=1)s.addColorStop(n/h,color),s.addColorStop((n+1)/h,window.adjustColor(color, 53));for(l=t.createLinearGradient(0,0,0,i),l.addColorStop(0,window.adjustColor(color, 20)),l.addColorStop(.1,window.adjustColor(color, 53)),n=o=0,d=h-1;o<=d;n=o+=1)l.addColorStop((n+.5)/h,color),l.addColorStop(Math.min(1,(n+1.5)/h),window.adjustColor(color, 53));break;';
@@ -1066,10 +1027,7 @@ function ECPinjectLoader() {
             src = src.replace(/t\.prototype\.([iI10OlL]{5})=function\((.)\)\{var\s*(.,.,.,.,.,.,.);(return\s*.=new)/i, 't.prototype.$1=function($2){var $3,custom,laserColor;$4');
             src = src.replace(/(.=new\s*[iI10OlL]{5}\(this\.[iI10OlL]{5}\.mode\.[iI10OlL]{5}\.ships_by_code\[.\.code\],.\/360)\),/i, '$1,null,null, laserColor),');
             const ggez = src.match(/,.=.\.hue,this\.[iI10OlL]{5}\.mode/)[0].match(/([iI10OlL]{5})/)[0];
-            src = src.replace(
-                /,.\.read\((.)\),/i,
-                `$&custom = this.${ggez}.names.getCustom($1.getUint8(1)),laserColor = custom?.laser?.includes("!") ? custom.laser.split("!")[1] : null,console.log("custom:",laserColor),`
-            );
+            src = src.replace(/,.\.read\((.)\),/i, `$&custom = this.${ggez}.names.getCustom($1.getUint8(1)),laserColor = custom?.laser?.includes("!") ? custom.laser.split("!")[1] : null,`);
             src = src.replace(/(this\.[iI10OlL]{5}=function\(\)\{function t\(t,e,i,s)(\)\{)var (.*?)if\(/, '$1,color$2var $3this.shipcolor = color != null ? color : null;if(');
             const ggezy = src.match(/(this\.laserticles\.[iI10OlL]{5}\.[iI10OlL]{5}\.)mode\.anonymous_ships/)[1];
             src = src.replace(/this\.laserticles\s*=\s*.,/, `$&this.ggcustom = ${ggezy}names.getCustom(this.shipid),`);
@@ -1115,6 +1073,7 @@ function ECPinjectLoader() {
                     document.body.appendChild(script);
                     if (localStorage.getItem('selftag') === null) localStorage.selftag = true;
                     window.module.exports.settings.parameters.selftag = { name: 'Self Ship Tag', value: !0, skipauto: !0, filter: 'default,app,mobile' };
+                    window.module.exports.settings.parameters.richPresence = { name: 'Discord Activity Button', value: true, skipauto: !0, filter: 'default,app,mobile' };
                     window.module.exports.settings.parameters.show_blank_badge = { name: 'Blank Badges', value: !0, skipauto: !0, filter: 'default,app,mobile' };
                     window.module.exports.settings.parameters.emopacity = { name:"Emote Capacity",value:ECPStorage.getEmotes(),skipauto:!0,type:"range",min:1,max:5,filter:"default,app,mobile"};
                     window.module.exports.settings.parameters.gemcolor1 = { name: 'Gem Color 1', value: ECPStorage.getGemColor1(), skipauto: true, type: 'color', filter: 'default,app,mobile' };
@@ -1127,6 +1086,16 @@ function ECPinjectLoader() {
                     }
                 }, 100);
             }
+                window.electronAPI.DiscordActive();
+                let lastValue = localStorage.getItem('richPresence');
+                const checkInterval = setInterval(() => {
+                    const currentValue = localStorage.getItem('richPresence');
+  
+                    if (currentValue !== lastValue) {
+                        lastValue = currentValue;
+                        window.electronAPI.DiscordActive();
+                    }
+                }, 300);
                     let gemcolor = setInterval(() => {
                     let CrystalObject;
                     for (let i in window) {

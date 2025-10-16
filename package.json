@@ -1,6 +1,6 @@
 {
   "name": "starblast-launcher",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Starblast Launcher allows you to play all version's of Starblast, including the Steam Version, Standalone or Browser.",
   "keywords": [
     "starblast.io",
@@ -16,7 +16,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "electron .",
     "dist-win": "electron-builder --win"
   },
   "dependencies": {
