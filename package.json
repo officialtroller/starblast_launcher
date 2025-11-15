@@ -1,42 +1,44 @@
 {
-  "name": "starblast-launcher",
-  "version": "1.1.1",
-  "description": "Starblast Launcher allows you to play all version's of Starblast, including the Steam Version, Standalone or Browser.",
-  "keywords": [
-    "starblast.io",
-    "launcher",
-    "mod"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "none"
-  },
-  "license": "MIT",
-  "author": "official_troller",
-  "type": "commonjs",
-  "main": "index.js",
-  "scripts": {
-    "test": "electron .",
-    "dist-win": "electron-builder --win"
-  },
-  "dependencies": {
-    "discord-rpc": "^4.0.1"
-  },
-  "devDependencies": {
-    "electron": "^38.2.2",
-    "electron-builder": "^26.0.12"
-  },
-  "build": {
+    "name": "starblast-launcher",
+    "version": "1.2.0",
+    "description": "Starblast Launcher allows you to play all version's of Starblast, including the Steam Version, Standalone or Browser.",
+    "keywords": [
+        "starblast.io",
+        "launcher",
+        "mod"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "none"
+    },
+    "license": "MIT",
+    "author": "official_troller",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {
+        "test": "electron .",
+        "dist-win": "electron-builder --win"
+    },
+    "dependencies": {
+        "discord-rpc": "^4.0.1"
+    },
+    "devDependencies": {
+        "electron": "^38.2.2",
+        "electron-builder": "^26.0.12"
+    },
+    "build": {
         "appId": "com.officialtroller.starblast-launcher",
         "productName": "Starblast Launcher",
         "files": [
             "node_modules/",
-            "index.js",
+            "background.png",
+            "img.ico",
             "index.html",
+            "index.js",
+            "license.md",
             "logo.svg",
-            "sb_background.jpg",
-            "steam.js",
-            "img.ico"
+            "package.json",
+            "steam.js"
         ],
         "win": {
             "target": [

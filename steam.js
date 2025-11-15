@@ -1,140 +1,6 @@
 let has_run = false;
 let has_injected = false;
 const { contextBridge, ipcRenderer } = require('electron');
-contextBridge.exposeInMainWorld('SteamStorage', {
-    getGemColor1: () => {
-        try {
-            const gemcolor1 = localStorage.getItem('gemcolor1');
-            if (gemcolor1) {
-                return JSON.parse(gemcolor1);
-            } else {
-                localStorage.setItem('gemcolor1', '"#ff0000"');
-                return '#ff0000';
-            }
-        } catch (_) {
-            localStorage.setItem('gemcolor1', '"#ff0000"');
-            return '#ff0000';
-        }
-    },
-    getGemColor2: () => {
-        try {
-            const gemcolor2 = localStorage.getItem('gemcolor2');
-            if (gemcolor2) {
-                return JSON.parse(gemcolor2);
-            } else {
-                localStorage.setItem('gemcolor2', '"#ff8080"');
-                return '#ff8080';
-            }
-        } catch (_) {
-            localStorage.setItem('gemcolor2', '"#ff8080"');
-            return '#ff8080';
-        }
-    },
-    getEmotes: () => {
-        try {
-            return JSON.parse(localStorage.getItem('emopacity'));
-        } catch (_) {
-            localStorage.setItem('emopacity', '"4"');
-            return '4';
-        }
-    },
-    enableScrollEvents: () => {
-        const addScrollListener = selector => {
-            const titleElement = document.querySelector(`div.customfield[data-type="${selector}"] > .title`);
-            if (titleElement) {
-                titleElement.addEventListener('wheel', e => {
-                    const rightArrow = document.querySelector(`div.customfield[data-type="${selector}"] > i.fa.fa-caret-right`);
-                    const leftArrow = document.querySelector(`div.customfield[data-type="${selector}"] > i.fa.fa-caret-left`);
-
-                    if (e.deltaY < 1 && rightArrow) {
-                        rightArrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: false, cancelable: true }));
-                    } else if (e.deltaY > 1 && leftArrow) {
-                        leftArrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: false, cancelable: true }));
-                    }
-
-                    e.stopPropagation();
-                });
-            }
-        };
-
-        ['badge', 'finish', 'laser'].forEach(addScrollListener);
-    },
-});
-contextBridge.exposeInMainWorld('BrowserStorage', {
-    getGem1: () => {
-        try {
-            return JSON.parse(localStorage.getItem('gemindeed'));
-        } catch (_) {
-            localStorage.setItem('gemindeed', '"#ff0000"');
-            return '#ff0000';
-        }
-    },
-    getGem2: () => {
-        try {
-            return JSON.parse(localStorage.getItem('gemindeed1'));
-        } catch (_) {
-            localStorage.setItem('gemindeed1', '"#ff8080"');
-            return '#ff8080';
-        }
-    },
-    getEmotes: () => {
-        try {
-            return JSON.parse(localStorage.getItem('emopacity'));
-        } catch (_) {
-            localStorage.setItem('emopacity', '"4"');
-            return '4';
-        }
-    },
-    enableScrollEvents: () => {
-        const addScrollListener = (selector, rightArrowSelector, leftArrowSelector) => {
-            const element = document.querySelector(selector);
-            if (element) {
-                element.addEventListener('wheel', e => {
-                    const rightArrow = document.querySelector(rightArrowSelector);
-                    const leftArrow = document.querySelector(leftArrowSelector);
-
-                    if (e.deltaY < 1 && rightArrow) {
-                        rightArrow.click();
-                    } else if (e.deltaY > 1 && leftArrow) {
-                        leftArrow.click();
-                    }
-
-                    e.stopPropagation();
-                });
-            }
-        };
-
-        addScrollListener(
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td.ecpverifiedlogo.frozenbg',
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(1) > i.fa.fa-caret-right',
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(1) > i.fa.fa-caret-left'
-        );
-
-        addScrollListener(
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(1) > div',
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(1) > i.fa.fa-caret-right',
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(1) > i.fa.fa-caret-left'
-        );
-
-        addScrollListener(
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td.shippreview.frozenbg',
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(2) > i.fa.fa-caret-right',
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(2) > i.fa.fa-caret-left'
-        );
-
-        addScrollListener(
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(2) > div',
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(2) > i.fa.fa-caret-right',
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(2) > i.fa.fa-caret-left'
-        );
-
-        addScrollListener(
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(3) > div',
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(3) > i.fa.fa-caret-right',
-            'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(3) > i.fa.fa-caret-left'
-        );
-    },
-});
 
 contextBridge.exposeInMainWorld('adjustColor', (hex, percent) => {
     if (!/^#?[0-9A-Fa-f]{6}$/.test(hex)) return hex;
@@ -151,7 +17,8 @@ contextBridge.exposeInMainWorld('adjustColor', (hex, percent) => {
 
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 });
-contextBridge.exposeInMainWorld('ECPStorage', {
+
+contextBridge.exposeInMainWorld('ClientStorage', {
     getGemColor1: () => {
         try {
             const gemcolor1 = localStorage.getItem('gemcolor1');
@@ -188,31 +55,98 @@ contextBridge.exposeInMainWorld('ECPStorage', {
             return '4';
         }
     },
-    enableScrollEvents: () => {
-        const addScrollListener = selector => {
-            const titleElement = document.querySelector(`div.customfield[data-type="${selector}"] > .title`);
-            if (titleElement) {
-                titleElement.addEventListener('wheel', e => {
-                    const rightArrow = document.querySelector(`div.customfield[data-type="${selector}"] > i.fa.fa-caret-right`);
-                    const leftArrow = document.querySelector(`div.customfield[data-type="${selector}"] > i.fa.fa-caret-left`);
+    getShipColor: () => {
+        try {
+            return JSON.parse(localStorage.getItem('shpcolorr'));
+        } catch (_) {
+            const fallback = '#9BAACF';
+            localStorage.setItem('shpcolorr', JSON.stringify(fallback));
+            return fallback;
+        }
+    },
+    enableScrollEvents: client => {
+        let addScrollListener;
+        switch (client) {
+            case 'steam':
+            case 'ecp':
+                addScrollListener = selector => {
+                    const titleElement = document.querySelector(`div.customfield[data-type="${selector}"] > .title`);
+                    if (titleElement) {
+                        titleElement.addEventListener('wheel', e => {
+                            const rightArrow = document.querySelector(`div.customfield[data-type="${selector}"] > i.fa.fa-caret-right`);
+                            const leftArrow = document.querySelector(`div.customfield[data-type="${selector}"] > i.fa.fa-caret-left`);
 
-                    if (e.deltaY < 1 && rightArrow) {
-                        rightArrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: false, cancelable: true }));
-                    } else if (e.deltaY > 1 && leftArrow) {
-                        leftArrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: false, cancelable: true }));
+                            if (e.deltaY < 1 && rightArrow) {
+                                rightArrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: false, cancelable: true }));
+                            } else if (e.deltaY > 1 && leftArrow) {
+                                leftArrow.dispatchEvent(new MouseEvent('mousedown', { bubbles: false, cancelable: true }));
+                            }
+
+                            e.stopPropagation();
+                        });
                     }
+                };
 
-                    e.stopPropagation();
-                });
-            }
-        };
+                ['badge', 'finish', 'laser'].forEach(addScrollListener);
+                break;
+            case 'browser':
+                addScrollListener = (selector, rightArrowSelector, leftArrowSelector) => {
+                    const element = document.querySelector(selector);
+                    if (element) {
+                        element.addEventListener('wheel', e => {
+                            const rightArrow = document.querySelector(rightArrowSelector);
+                            const leftArrow = document.querySelector(leftArrowSelector);
 
-        ['badge', 'finish', 'laser'].forEach(addScrollListener);
+                            if (e.deltaY < 1 && rightArrow) {
+                                rightArrow.click();
+                            } else if (e.deltaY > 1 && leftArrow) {
+                                leftArrow.click();
+                            }
+
+                            e.stopPropagation();
+                        });
+                    }
+                };
+
+                addScrollListener(
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td.ecpverifiedlogo.frozenbg',
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(1) > i.fa.fa-caret-right',
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(1) > i.fa.fa-caret-left'
+                );
+
+                addScrollListener(
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(1) > div',
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(1) > i.fa.fa-caret-right',
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(1) > i.fa.fa-caret-left'
+                );
+
+                addScrollListener(
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td.shippreview.frozenbg',
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(2) > i.fa.fa-caret-right',
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(2) > i.fa.fa-caret-left'
+                );
+
+                addScrollListener(
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(2) > div',
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(2) > i.fa.fa-caret-right',
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(2) > i.fa.fa-caret-left'
+                );
+
+                addScrollListener(
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(3) > div',
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(3) > i.fa.fa-caret-right',
+                    'body > div.modal > div.modalbody > div > table > tbody > tr > td:nth-child(2) > div:nth-child(3) > i.fa.fa-caret-left'
+                );
+                break;
+            default:
+                return null;
+        }
     },
 });
 contextBridge.exposeInMainWorld('electronAPI', {
-    sendMessage: msg => ipcRenderer.send(msg),
-    DiscordActive: () => ipcRenderer.send('richPresence', localStorage.getItem('richPresence') === 'true'),
+    sendMessage: msg => {
+        ipcRenderer.send(msg);
+    },
 });
 
 function waitForWindow() {
@@ -320,45 +254,18 @@ function SteaminjectLoader() {
             let newnewrgs = newrgs[0].match(/[iI10OlL]{4,6}/g);
             src = src.replace(
                 /for\(f=document\.queryselectorall\("\.option\s*input\[type=range\]"\),\s*i=function\(e\)\{.*?,1\)\}\)\}\}/gis,
-                `for (f = document.querySelectorAll(".option input[type=range], .option input[type=color]"), i = function(e) {return function(i) {if(i.type === "range"){if (i.id === "emopacity") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = parseInt(i.value, 10), e.updateSettings(s, !0)})} else {if (i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = "0" === i.value ? t("Off") : Math.round(50 * i.value) + " %", e.updateSettings(s, !0)}), i.dispatchEvent(new Event("input")), "sounds" === i.id) return i.addEventListener("change", function (t) {return e.${newnewrgs[0]}.${newnewrgs[1]}.beep(4 + .2 * Math.random(), 1)})}} else if (i.type === "color") {if (i.id === "gemcolor1") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = SteamStorage.getGemColor1();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = SteamStorage.getGemColor1();} else if (i.id === "gemcolor2") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = SteamStorage.getGemColor2();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = SteamStorage.getGemColor2();}else if (i.id === "shpcolorr") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = null;x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = null;}}}}`
+                `for (f = document.querySelectorAll(".option input[type=range], .option input[type=color]"), i = function(e) {return function(i) {if(i.type === "range"){if (i.id === "emopacity") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = parseInt(i.value, 10), e.updateSettings(s, !0)})} else {if (i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = "0" === i.value ? t("Off") : Math.round(50 * i.value) + " %", e.updateSettings(s, !0)}), i.dispatchEvent(new Event("input")), "sounds" === i.id) return i.addEventListener("change", function (t) {return e.${newnewrgs[0]}.${newnewrgs[1]}.beep(4 + .2 * Math.random(), 1)})}} else if (i.type === "color") {if (i.id === "gemcolor1") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = ClientStorage.getGemColor1();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = ClientStorage.getGemColor1();} else if (i.id === "gemcolor2") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = ClientStorage.getGemColor2();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = ClientStorage.getGemColor2();}else if (i.id === "shpcolorr") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = ClientStorage.getShipColor();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = ClientStorage.getShipColor();}}}}`
             );
-            const carbonMatch = src.match(/t\.prototype\.buildCarbonMaterial.*?emissiveMap:([iI10OlL]{5})/);
-            const carbonEmissiveMap = carbonMatch[0].match(/emissiveMap\:[iI10OlL]{5}/);
-            const mapregex = src.match(/t\.prototype\.buildCarbonMaterial.*?map\:[iI10OlL]{5}/);
-            const mapvalue = mapregex[0].match(/[iI10OlL]{5}/);
-            const emissiveregex = src.match(/emissive\:[iI10OlL]{5}/);
-            const finishfunc = `t.prototype.fullbolor=function(){return this.material=new THREE.MeshPhongMaterial({map:${mapvalue},bumpMap:${mapvalue},specular:1052688,shininess:50,bumpScale:.1,color:(this.shipcolor != undefined) ? this.shipcolor : JSON.parse(localStorage.getItem('shpcolorr')),${emissiveregex}.hsvToRgbHex(this.hue, 1, 1),${carbonEmissiveMap}})},`;
-            const finishcolor =
-                'case"shpcolorr":let color;if (this.laser.split("!")[1] == null){color = JSON.parse(localStorage.getItem("shpcolorr"))}else {color = this.laser.split("!")[1]}; for(s=t.createLinearGradient(0,0,0,i),h=Math.min(10,this.size/10),n=a=0,u=h-1;a<=u;n=a+=1)s.addColorStop(n/h,color),s.addColorStop((n+1)/h,window.adjustColor(color, 53));for(l=t.createLinearGradient(0,0,0,i),l.addColorStop(0,window.adjustColor(color, 20)),l.addColorStop(.1,window.adjustColor(color, 53)),n=o=0,d=h-1;o<=d;n=o+=1)l.addColorStop((n+.5)/h,color),l.addColorStop(Math.min(1,(n+1.5)/h),window.adjustColor(color, 53));break;';
-            const finishcheese = 'case "shpcolorr":this.fullbolor();break;';
-            const ivalue = src.match(/(.)=this\.[iI10OlL]{5}\.names\.getcustom\(.\.[iI10OlL]{5}\.status\.id\)/i)[1];
-            src = src.replace(/this\.type=.\.getUint/, 'this.type = this.ggcustom?.laser.includes("!") ? this.ggcustom.laser.split("!")[0] : t.getUint');
-            src = src.replace(
-                /(.)=new\s*([iI10OlL]{5})\(this\.([iI10OlL]{5})\.mode\.([iI10OlL]{5})\.ships_by_code\[t\.([iI10OlL]{5})\.status\.type],(.)\/360\)/i,
-                `this.shipycolor = ${ivalue}?.laser?.includes("!") ? ${ivalue}.laser.split("!")[1] : null, $1=new $2(this.$3.mode.$4.ships_by_code[t.$5.status.type],$6/360, null,null, this.shipycolor)`
-            );
-            src = src.replace(/t\.prototype\.([iI10OlL]{5})=function\((.)\)\{var\s*(.,.,.,.,.,.,.);(return\s*.=new)/i, 't.prototype.$1=function($2){var $3,custom,laserColor;$4');
-            src = src.replace(/(.=new\s*[iI10OlL]{5}\(this\.[iI10OlL]{5}\.mode\.[iI10OlL]{5}\.ships_by_code\[.\.code\],.\/360)\),/i, '$1,null,null, laserColor),');
-            const ggez = src.match(/,.=.\.hue,this\.[iI10OlL]{5}\.mode/)[0].match(/([iI10OlL]{5})/)[0];
-            src = src.replace(/,.\.read\((.)\),/i, `$&custom = this.${ggez}.names.getCustom($1.getUint8(1)),laserColor = custom?.laser?.includes("!") ? custom.laser.split("!")[1] : null,`);
-            src = src.replace(/(this\.[iI10OlL]{5}=function\(\)\{function t\(t,e,i,s)(\)\{)var (.*?)if\(/, '$1,color$2var $3this.shipcolor = color != null ? color : null;if(');
-            const ggezy = src.match(/(this\.laserticles\.[iI10OlL]{5}\.[iI10OlL]{5}\.)mode\.anonymous_ships/)[1];
-            src = src.replace(/this\.laserticles\s*=\s*.,/, `$&this.ggcustom = ${ggezy}names.getCustom(this.shipid),`);
-            src = src.replace(/case\s*"carbon"\s*:\s*this\.buildCarbonMaterial\(\);break;\n?/, '$&' + finishcheese);
-            src = src.replace(/t\.prototype\.buildCarbonMaterial\s*=\s*function\s*\([^)]*\)\s*{[^}]*}\)},/, '$&' + finishfunc);
-            src = src.replace(/case\s*"titanium"\s*:(s=t.createLinearGradient\(0,0,0,i\),[\s\S]*?);break;/, '$&' + finishcolor);
-            src = src.replace('"carbon"===this.finish', '"carbon"===this.finish || "shpcolorr"===this.finish');
             src = src.replace('null!=e&&null!=this.client_version&&(e.innerText="Client Version: "+this.client_version)', `null != e && (e.innerText = 'Client Version: Steam 1.1.0')`);
             const titreg = src.match(/case\s*"titanium"\s*:(\w+)=t.createLinearGradient\(0,0,0,i\),[\s\S]*?;break;/);
             const defreg = src.match(/default:(\w+)=t\.createLinearGradient\(0,0,0,i\),\w+\.addColorStop\(0,"#EEE"\),\w+\.addColorStop\(1,"#666"\)/);
             src = src.replace('https://starblast.io/modsinfo.json', 'https://raw.githubusercontent.com/officialtroller/starblast-things/refs/heads/main/modsinfo.js');
             src = src.replace(/this\.hue,\.5,1/g, 'this.hue,1,1');
+            src = src.replace(/this\.hue,\.5,\.5/g, 'this.hue,1,.5');
             src = src.replace('||(this.icon="https://starblast.io/ecp/gamepedia.png")', '||(this.icon=this.icon)');
             src = src.replace('NEW!', ' ');
             src = src.replace(/\.toUpperCase\(\)/g, '');
             src = src.replace(/text-transform:\s*uppercase;/gim, '');
-            src = src.replace(/case"star":.*?break;/g, `$&case"blank":t.fillStyle="hsla(200, 0%, 0%, 0)";break;`);
-            src = src.replace(/case\s*"pmf"\s*:\s*this\.icon\s*=\s*".*?";\s*break;/, '$&case "troller": this.icon = "https://officialtroller.github.io/src/img/logo.png";break;');
             src = src.replace(/default:t.fillStyle="hsl\(200,50%,20%\)"/, 'default:t.fillStyle = "hsl(50,100%,50%)"');
             src = src.replace(
                 /default:t\.fillStyle="hsl\(50,100%,70%\)",t\.fillText\("S",e\/2,i\/2\)/,
@@ -369,7 +276,7 @@ function SteaminjectLoader() {
                 defreg[0],
                 `default:${defreg[1]}=t.createLinearGradient(0,0,0,i),${defreg[1]}.addColorStop(0,"hsl(0,100%,50%)"),${defreg[1]}.addColorStop(.5,"hsl(60,100%,50%)"),${defreg[1]}.addColorStop(.5,"hsl(120,100%,50%)"),${defreg[1]}.addColorStop(1,"hsl(180,100%,50%)")`
             );
-            src = src.replace('classList.add("shown")', '$&, window.SteamStorage.enableScrollEvents()');
+            src = src.replace('classList.add("shown")', '$&, window.ClientStorage.enableScrollEvents("steam")');
             src = src.replace(/window\.parent\.postMessage\("([^"]*)","\*"\)/gim, 'window.electronAPI.sendMessage("$1")');
 
             const end_time = performance.now();
@@ -377,147 +284,191 @@ function SteaminjectLoader() {
             document.open();
             document.write(src);
             document.close();
-            let script = `
-                    if (localStorage.getItem('richPresence') == null) localStorage.setItem('richPresence', true);
-                    let sbibt = document.createElement('script');
-                    sbibt.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/stationmodels.user.js';
-                    document.body.appendChild(sbibt);
-                    let script = document.createElement('script');
-                    script.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/weaponmodels.user.js';
-                    document.body.appendChild(script);
-                    window.module.exports.settings.parameters.selftag = { name: 'Self Ship Tag', value: !0, skipauto: !0, filter: 'default,app,mobile' };
-                    window.module.exports.settings.parameters.richPresence = { name: 'Discord Activity Button', value: true, skipauto: !0, filter: 'default,app,mobile' };
-                    window.module.exports.settings.parameters.show_blank_badge = { name: 'Blank Badges', value: !0, skipauto: !0, filter: 'default,app,mobile' };
-                    window.module.exports.settings.parameters.emopacity = { name:"Emote Capacity",value:SteamStorage.getEmotes(),skipauto:!0,type:"range",min:1,max:5,filter:"default,app,mobile"};
-                    window.module.exports.settings.parameters.gemcolor1 = { name: 'Gem Color 1', value: SteamStorage.getGemColor1(), skipauto: true, type: 'color', filter: 'default,app,mobile' };
-                    window.module.exports.settings.parameters.gemcolor2 = { name: 'Gem Color 2', value: SteamStorage.getGemColor2(), skipauto: true, type: 'color', filter: 'default,app,mobile' };
-                if (localStorage.getItem('emopacity') !== null) {
-                let panel = setInterval(() => {
-                    if (window.ChatPanel != null) {
-                        clearInterval(panel);
-                        window.ChatPanel.prototype.typed = new Function('return ' + window.ChatPanel.prototype.typed.toString().replace('>=4', '>=SteamStorage.getEmotes()'))();
-                    }
-                }, 100);
+            let script = `let sbibt = document.createElement('script');
+sbibt.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/stationmodels.user.js';
+document.body.appendChild(sbibt);
+let script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/weaponmodels.user.js';
+document.body.appendChild(script);
+window.module.exports.settings.parameters.selftag = {
+    name: 'Self Ship Tag',
+    value: !0,
+    skipauto: !0,
+    filter: 'default,app,mobile'
+};
+window.module.exports.settings.parameters.show_blank_badge = {
+    name: 'Blank Badges',
+    value: !0,
+    skipauto: !0,
+    filter: 'default,app,mobile'
+};
+window.module.exports.settings.parameters.emopacity = {
+    name: "Emote Capacity",
+    value: ClientStorage.getEmotes(),
+    skipauto: !0,
+    type: "range",
+    min: 1,
+    max: 5,
+    filter: "default,app,mobile"
+};
+window.module.exports.settings.parameters.gemcolor1 = {
+    name: 'Gem Color 1',
+    value: ClientStorage.getGemColor1(),
+    skipauto: true,
+    type: 'color',
+    filter: 'default,app,mobile'
+};
+window.module.exports.settings.parameters.gemcolor2 = {
+    name: 'Gem Color 2',
+    value: ClientStorage.getGemColor2(),
+    skipauto: true,
+    type: 'color',
+    filter: 'default,app,mobile'
+};
+let pattern = /,(\\s*"blank"\\s*!={1,2}\\s*this\\.custom\\.badge)/;
+
+Search: for (let i in window) try {
+    let val = window[i].prototype;
+    for (let j in val) {
+        let func = val[j];
+        if ("function" == typeof func && func.toString().match(pattern)) {
+            val[j] = Function("return " + func.toString().replace(pattern, ", window.module.exports.settings.check('show_blank_badge') || $1"))();
+            val.drawIcon = Function("return " + val.drawIcon.toString().replace(/}\\s*else\\s*{/, '} else if (this.icon !== "blank") {'))();
+            let gl = window[i];
+            for (let k in gl) {
+                if ("function" == typeof gl[k] && gl[k].toString().includes(".table")) {
+                    let oldF = gl[k];
+                    gl[k] = function() {
+                        let current = window.module.exports.settings.check('show_blank_badge');
+                        if (this.showBlank !== current) {
+                            for (let i in this.table)
+                                if (i.startsWith("blank")) delete this.table[i];
+                            this.showBlank = current;
+                        }
+                        return oldF.apply(this, arguments)
+                    };
+                    break Search;
+                }
             }
-                window.electronAPI.DiscordActive();
-                let lastValue = localStorage.getItem('richPresence');
-                const checkInterval = setInterval(() => {
-                    const currentValue = localStorage.getItem('richPresence');
-  
-                    if (currentValue !== lastValue) {
-                        lastValue = currentValue;
-                        window.electronAPI.DiscordActive();
+        }
+    }
+}
+catch (e) {}
+if (localStorage.getItem('emopacity') !== null) {
+    let panel = setInterval(() => {
+        if (window.ChatPanel != null) {
+            clearInterval(panel);
+            window.ChatPanel.prototype.typed = new Function('return ' + window.ChatPanel.prototype.typed.toString().replace('>=4', '>=ClientStorage.getEmotes()'))();
+        }
+    }, 100);
+}
+let gemcolor = setInterval(() => {
+    let CrystalObject;
+    for (let i in window) {
+        try {
+            let val = window[i];
+            if ('function' == typeof val.prototype.createModel && val.prototype.createModel.toString().includes('Crystal')) {
+                CrystalObject = val;
+                clearInterval(gemcolor);
+                break;
+            }
+        } catch (e) {}
+    }
+
+    if (CrystalObject != null) {
+        let oldModel = CrystalObject.prototype.getModelInstance;
+
+        CrystalObject.prototype.getModelInstance = function() {
+            let res = oldModel.apply(this, arguments);
+            let color = window.ClientStorage.getGemColor1();
+            let specular = window.ClientStorage.getGemColor2();
+            this.material.color.set(color);
+            this.material.specular.set(specular);
+            return res;
+        };
+    }
+}, 100);
+setTimeout(function() {
+    !(function() {
+        let e, t;
+        for (let n in window)
+            try {
+                let i = window[n].prototype;
+                if (null != i)
+                    for (let o in i) {
+                        let s = i[o];
+                        if ('function' == typeof s && s.toString().match(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/)) {
+                            let l;
+                            (e = n), (i[(t = Object.keys(i).find(e => 'function' == typeof i[e] && (l = (i[e].toString().match(/===(\\w+\\.[^,]+)\\.hue/) || [])[1])))] = Function('return ' + i[t].toString().replace(/(\\.id)/, '$1, this.selfShip = this.shipid == ' + l + '.id'))()), (i[o] = Function('return ' + s.toString().replace(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/, "$1 this.selfShip ? 'hsla(180,100%,75%,.75)' : $2"))());
+                        }
                     }
-                }, 300);
-                    let gemcolor = setInterval(() => {
-                    let CrystalObject;
-                    for (let i in window) {
-                        try {
-                            let val = window[i];
-                            if ('function' == typeof val.prototype.createModel && val.prototype.createModel.toString().includes('Crystal')) {
-                                CrystalObject = val;
-                                clearInterval(gemcolor);
-                                break;
-                            }
-                        } catch (e) {}
+            } catch (r) {}
+        let a = Object.getPrototypeOf(Object.values(Object.values(window.module.exports.settings).find(e => e && e.mode)).find(e => e && e.background)),
+            d = a.constructor,
+            c = d.prototype,
+            u = d.toString(),
+            hue = u.match(/(\\w+)\\.hue/)[1],
+            f = u.match(/(\\w+)\\.add\\(/)[1],
+            h = u.match(/chat_bubble\\.(\\w+)/)[1];
+        ((d = Function('return ' + u.replace(/}$/, ', this.welcome || (this.ship_tag = new ' + e + '(Math.floor(360 * 0)), this.' + f + '.add(this.ship_tag.' + h + '))}'))()).prototype = c),
+        (d.prototype.constructor = d),
+        (a.constructor = d),
+        (d.prototype.updateShipTag = function() {
+            if (null != this.ship_tag) {
+                if (!this.shipKey) {
+                    this.shipKey = Object.keys(this).find(e => this[e] && this[e].ships);
+                    let e = this[this.shipKey];
+                    this.statusKey = Object.keys(e).find(t => e[t] && e[t].status);
+                }
+                let n = this[hue],
+                    i = this[this.shipKey][this.statusKey];
+                this.ship_tag[t](n, n.names.get(i.status.id), i.status, i.instance);
+                let o = this.ship_tag[h].position;
+                (o.x = i.status.x), (o.y = i.status.y - 2 - i.type.radius), (o.z = 1), (this.ship_tag[h].visible = 'true' == localStorage.getItem('selftag') && i.status.alive && !i.status.guided);
+            }
+        });
+        let m = Object.keys(c).find(e => 'function' == typeof c[e] && c[e].toString().includes('render'));
+        d.prototype[m] = Function('return ' + d.prototype[m].toString().replace(/(\\w+\\.render)/, 'this.updateShipTag(), $1'))();
+        let g = function(...e) {
+            return window.module.exports.translate(...e);
+        };
+        for (let $ in window)
+            try {
+                let y = window[$];
+                if ('function' == typeof y.prototype.refused)
+                    for (let v in y.prototype) {
+                        let b = y.prototype[v];
+                        'function' == typeof b && b.toString().includes('new Scene') && (y.prototype[v] = Function('Scene', 't', 'return ' + b.toString())(d, g));
                     }
+            } catch (_) {}
+    })();
+}, 5000);
+let explolight = setInterval(() => {
+    if (window.Explosions != null) {
+        clearInterval(explolight);
+        let oldExplosion = Explosions.prototype.explode,
+            oldBlast = Explosions.prototype.blast;
 
-                    if (CrystalObject != null) {
-                        let oldModel = CrystalObject.prototype.getModelInstance;
+        let globalVal = oldExplosion
+            .toString()
+            .match(/this\\.([0OlI1\\.]+)\\.settings\\.check/)[1]
+            .split('.');
 
-                        CrystalObject.prototype.getModelInstance = function () {
-                            let res = oldModel.apply(this, arguments);
-                            let color = window.SteamStorage.getGemColor1();
-                            let specular = window.SteamStorage.getGemColor2();
-                            this.material.color.set(color);
-                            this.material.specular.set(specular);
-                            return res;
-                        };
-                    }
-                }, 100);
-                setTimeout(function () {
-                    !(function () {
-                        let e, t;
-                        for (let n in window)
-                            try {
-                                let i = window[n].prototype;
-                                if (null != i)
-                                    for (let o in i) {
-                                        let s = i[o];
-                                        if ('function' == typeof s && s.toString().match(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/)) {
-                                            let l;
-                                            (e = n), (i[(t = Object.keys(i).find(e => 'function' == typeof i[e] && (l = (i[e].toString().match(/===(\\w+\\.[^,]+)\\.hue/) || [])[1])))] = Function('return ' + i[t].toString().replace(/(\\.id)/, '$1, this.selfShip = this.shipid == ' + l + '.id'))()), (i[o] = Function('return ' + s.toString().replace(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/, "$1 this.selfShip ? 'hsla(180,100%,75%,.75)' : $2"))());
-                                        }
-                                    }
-                            } catch (r) {}
-                        let a = Object.getPrototypeOf(Object.values(Object.values(window.module.exports.settings).find(e => e && e.mode)).find(e => e && e.background)),
-                            d = a.constructor,
-                            c = d.prototype,
-                            u = d.toString(),
-                            hue = u.match(/(\\w+)\\.hue/)[1],
-                            f = u.match(/(\\w+)\\.add\\(/)[1],
-                            h = u.match(/chat_bubble\\.(\\w+)/)[1];
-                        ((d = Function('return ' + u.replace(/}$/, ', this.welcome || (this.ship_tag = new ' + e + '(Math.floor(360 * 0)), this.' + f + '.add(this.ship_tag.' + h + '))}'))()).prototype = c),
-                            (d.prototype.constructor = d),
-                            (a.constructor = d),
-                            (d.prototype.updateShipTag = function () {
-                                if (null != this.ship_tag) {
-                                    if (!this.shipKey) {
-                                        this.shipKey = Object.keys(this).find(e => this[e] && this[e].ships);
-                                        let e = this[this.shipKey];
-                                        this.statusKey = Object.keys(e).find(t => e[t] && e[t].status);
-                                    }
-                                    let n = this[hue],
-                                        i = this[this.shipKey][this.statusKey];
-                                    this.ship_tag[t](n, n.names.get(i.status.id), i.status, i.instance);
-                                    let o = this.ship_tag[h].position;
-                                    (o.x = i.status.x), (o.y = i.status.y - 2 - i.type.radius), (o.z = 1), (this.ship_tag[h].visible = 'true' == localStorage.getItem('selftag') && i.status.alive && !i.status.guided);
-                                }
-                            });
-                        let m = Object.keys(c).find(e => 'function' == typeof c[e] && c[e].toString().includes('render'));
-                        d.prototype[m] = Function('return ' + d.prototype[m].toString().replace(/(\\w+\\.render)/, 'this.updateShipTag(), $1'))();
-                        let g = function (...e) {
-                            return window.module.exports.translate(...e);
-                        };
-                        for (let $ in window)
-                            try {
-                                let y = window[$];
-                                if ('function' == typeof y.prototype.refused)
-                                    for (let v in y.prototype) {
-                                        let b = y.prototype[v];
-                                        'function' == typeof b && b.toString().includes('new Scene') && (y.prototype[v] = Function('Scene', 't', 'return ' + b.toString())(d, g));
-                                    }
-                            } catch (_) {}
-                    })();
-                }, 5000);
-                
-                let explolight = setInterval(() => {
-                    if (window.Explosions != null) {
-                        clearInterval(explolight);
-                        let oldExplosion = Explosions.prototype.explode,
-                            oldBlast = Explosions.prototype.blast;
+        Explosions.prototype.isEnabled = function() {
+            let _this = this;
+            for (let i of globalVal) _this = _this[i];
+            return _this.settings.check('explolight');
+        };
 
-                        let globalVal = oldExplosion
-                            .toString()
-                            .match(/this\\.([0OlI1\\.]+)\\.settings\\.check/)[1]
-                            .split('.');
+        Explosions.prototype.explode = function() {
+            return this.isEnabled() && oldExplosion.apply(this, arguments);
+        };
 
-                        Explosions.prototype.isEnabled = function () {
-                            let _this = this;
-                            for (let i of globalVal) _this = _this[i];
-                            return _this.settings.check('explolight');
-                        };
-
-                        Explosions.prototype.explode = function () {
-                            return this.isEnabled() && oldExplosion.apply(this, arguments);
-                        };
-
-                        Explosions.prototype.blast = function () {
-                            return this.isEnabled() && oldBlast.apply(this, arguments);
-                        };
-                    }
-                }, 100);
-            `;
+        Explosions.prototype.blast = function() {
+            return this.isEnabled() && oldBlast.apply(this, arguments);
+        };
+    }
+}, 100);`;
             let scriptelm = document.createElement('script');
             scriptelm.innerHTML = script;
             setTimeout(() => {
@@ -565,39 +516,11 @@ function injectLoader() {
                 }
                 Client.log(`starting modifying...`);
                 let pfstart = performance.now();
-                const carbonMatch = src.match(/t\.prototype\.buildCarbonMaterial.*?emissiveMap:([iI10OlL]{5})/);
-                const carbonEmissiveMap = carbonMatch[0].match(/emissiveMap\:[iI10OlL]{5}/);
-                const mapregex = src.match(/t\.prototype\.buildCarbonMaterial.*?map\:[iI10OlL]{5}/);
-                const mapvalue = mapregex[0].match(/[iI10OlL]{5}/);
-                const emissiveregex = src.match(/emissive\:[iI10OlL]{5}/);
-                const ivalue = src.match(/(.)=this\.[iI10OlL]{5}\.names\.getcustom\(.\.[iI10OlL]{5}\.status\.id\)/i)[1];
-                const ggez = src.match(/,.=.\.hue,this\.[iI10OlL]{5}\.mode/)[0].match(/([iI10OlL]{5})/)[0];
-                const ggezy = src.match(/(this\.laserticles\.[iI10OlL]{5}\.[iI10OlL]{5}\.)mode\.anonymous_ships/)[1];
-                const finishfunc = `t.prototype.fullbolor=function(){return this.material=new THREE.MeshPhongMaterial({map:${mapvalue},bumpMap:${mapvalue},specular:1052688,shininess:50,bumpScale:.1,color:(this.shipcolor != undefined) ? this.shipcolor : JSON.parse(localStorage.getItem('shpcolorr')),${emissiveregex}.hsvToRgbHex(this.hue, 1, 1),${carbonEmissiveMap}})},`;
-                const finishcolor =
-                    'case"shpcolorr":let color;if (this.laser.split("!")[1] == null){color = JSON.parse(localStorage.getItem("shpcolorr"))}else {color = this.laser.split("!")[1]}; for(s=t.createLinearGradient(0,0,0,i),h=Math.min(10,this.size/10),n=a=0,u=h-1;a<=u;n=a+=1)s.addColorStop(n/h,color),s.addColorStop((n+1)/h,window.adjustColor(color, 53));for(l=t.createLinearGradient(0,0,0,i),l.addColorStop(0,window.adjustColor(color, 20)),l.addColorStop(.1,window.adjustColor(color, 53)),n=o=0,d=h-1;o<=d;n=o+=1)l.addColorStop((n+.5)/h,color),l.addColorStop(Math.min(1,(n+1.5)/h),window.adjustColor(color, 53));break;';
-                const finishcheese = 'case "shpcolorr":this.fullbolor();break;';
-                src = src.replace(
-                    /(.)=new\s*([iI10OlL]{5})\(this\.([iI10OlL]{5})\.mode\.([iI10OlL]{5})\.ships_by_code\[t\.([iI10OlL]{5})\.status\.type],(.)\/360\)/i,
-                    `this.shipycolor = ${ivalue}?.laser?.includes("!") ? ${ivalue}.laser.split("!")[1] : null, $1=new $2(this.$3.mode.$4.ships_by_code[t.$5.status.type],$6/360, null,null, this.shipycolor)`
-                );
-                src = src.replace(/t\.prototype\.([iI10OlL]{5})=function\((.)\)\{var\s*(.,.,.,.,.,.,.);(return\s*.=new)/i, 't.prototype.$1=function($2){var $3,custom,laserColor;$4');
-                src = src.replace(/(.=new\s*[iI10OlL]{5}\(this\.[iI10OlL]{5}\.mode\.[iI10OlL]{5}\.ships_by_code\[.\.code\],.\/360)\),/i, '$1,null,null, laserColor),');
-                src = src.replace(/,.\.read\((.)\),/i, `$&custom = this.${ggez}.names.getCustom($1.getUint8(1)),laserColor = custom?.laser?.includes("!") ? custom.laser.split("!")[1] : null,`);
-                src = src.replace(/(this\.[iI10OlL]{5}=function\(\)\{function t\(t,e,i,s)(\)\{)var (.*?)if\(/, '$1,color$2var $3this.shipcolor = color != null ? color : null;if(');
-                src = src.replace(/this\.laserticles\s*=\s*.,/, `$&this.ggcustom = ${ggezy}names.getCustom(this.shipid),`);
-                src = src.replace(/this\.type=.\.getUint/, 'this.type = this.ggcustom?.laser.includes("!") ? this.ggcustom.laser.split("!")[0] : t.getUint');
-                src = src.replace(/case\s*"carbon"\s*:\s*this\.buildCarbonMaterial\(\);break;\n?/, '$&' + finishcheese);
-                src = src.replace(/t\.prototype\.buildCarbonMaterial\s*=\s*function\s*\([^)]*\)\s*{[^}]*}\)},/, '$&' + finishfunc);
-                src = src.replace(/case\s*"titanium"\s*:(s=t.createLinearGradient\(0,0,0,i\),[\s\S]*?);break;/, '$&' + finishcolor);
-                src = src.replace('"carbon"===this.finish', '"carbon"===this.finish || "shpcolorr"===this.finish');
-                src = src.replace(/case\s*"pmf"\s*:\s*this\.icon\s*=\s*".*?";\s*break;/, '$&case "troller": this.icon = "https://officialtroller.github.io/src/img/logo.png";break;');
                 const defreg = src.match(/default:(\w+)=t\.createLinearGradient\(0,0,0,i\),\w+\.addColorStop\(0,"#EEE"\),\w+\.addColorStop\(1,"#666"\)/);
                 const titreg = src.match(/case\s*"titanium"\s*:(\w+)=t.createLinearGradient\(0,0,0,i\),[\s\S]*?;break;/);
                 let settingsregex = src.match(/music:\{[^{}]*\},/);
                 let settingsmatch = settingsregex[0].match(/[iI10OlL]{4,6}/g);
-                let newrgs = src.match(/e\.[iI10OlL]{4,6}\.[iI10OlL]{4,6}\.beep\(4\+\.2\*math\.random\(\)/gi);
-                let newnewrgs = newrgs[0].match(/[iI10OlL]{4,6}/g);
+                let newnewrgs = src.match(/e\.[iI10OlL]{4,6}\.[iI10OlL]{4,6}\.beep\(4\+\.2\*math\.random\(\)/gi)[0].match(/[iI10OlL]{4,6}/g);
                 let reegtest = src.match(
                     /if\("select"!==(\w+\.)type\)e\+='<div\s*class="option">'\+t\(\w+\.name\)\+'<label\s*class="switch"><input\s*type="checkbox"\s*'\+\(\w+\.value\?'checked="checked"':""\)\+'\s*id="'\+(\w+)\+'""><div\s*class="slider"><\/div><\/label><\/div>';/
                 );
@@ -617,9 +540,10 @@ function injectLoader() {
                 src = src.replace('LEADERBOARD', 'Leaderboard');
                 src = src.replace('https://starblast.io/modsinfo.json', 'https://raw.githubusercontent.com/officialtroller/starblast-things/refs/heads/main/modsinfo.js');
                 src = src.replace(/this\.hue,\.5,1/g, 'this.hue,1,1');
+                src = src.replace(/this\.hue,\.5,\.5/g, 'this.hue,1,.5');
                 src = src.replace(/(\.modal\s\.modecp\s*\{\s*[^}]*bottom:\s*)0\b/, '$1auto');
                 src = src.replace('NEW!', ' ');
-                src = src.replace(/\(\),this.showModal\("donate"\)/g, '(), this.showModal("donate"), window.BrowserStorage.enableScrollEvents()');
+                src = src.replace(/\(\),this.showModal\("donate"\)/g, '(), this.showModal("donate"), window.ClientStorage.enableScrollEvents("browser")');
                 src = src.replace('html5.api.gamedistribution.com/libs/gd/api.js', 'ads.blocked');
                 src = src.replace('https://sdk.crazygames.com/crazygames-sdk-v1.js', 'https://ads.blocked');
                 src = src.replace('||(this.icon="https://starblast.io/ecp/gamepedia.png")', '||(this.icon=this.icon)');
@@ -645,21 +569,31 @@ function injectLoader() {
                                     return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);
                                 });
                                 i.addEventListener("change", function (s) {
-                                        i.value = BrowserStorage.getGem1();
+                                        i.value = ClientStorage.getGemColor1();
                                         x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;
 
                                 })
-                                i.value = BrowserStorage.getGem1();
+                                i.value = ClientStorage.getGemColor1();
                             } else if (i.id === "gemindeed1") {
                                 i.addEventListener("input", function (s) {
                                     return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);
                                 });
                                 i.addEventListener("change", function (s) {
-                                        i.value = BrowserStorage.getGem2();
+                                        i.value = ClientStorage.getGemColor2();
                                         x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;
 
                                 })
-                                i.value = BrowserStorage.getGem2();
+                                i.value = ClientStorage.getGemColor2();
+                            }else if (i.id === "shpcolorr") {
+                                i.addEventListener("input", function (s) {
+                                    return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);
+                                });
+                                i.addEventListener("change", function (s) {
+                                        i.value = ClientStorage.getShipColor();
+                                        x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;
+
+                                })
+                                i.value = ClientStorage.getShipColor();
                             }
                         }
 					}
@@ -667,11 +601,11 @@ function injectLoader() {
                 );
                 src = src.replace(
                     /shake:\{[^{}]*\},/,
-                    '$&selftag:{name:"Self Ship Tag",value:!0,skipauto:!0,filter:"default,app,mobile"},show_blank_badge:{name:"Blank Badges",value:!0,skipauto:!0,filter:"default,app,mobile"},richPresence:{ name: "Discord Activity Button", value: true, skipauto: !0, filter: "default,app,mobile" },'
+                    '$&selftag:{name:"Self Ship Tag",value:!0,skipauto:!0,filter:"default,app,mobile"},show_blank_badge:{name:"Blank Badges",value:!0,skipauto:!0,filter:"default,app,mobile"},'
                 );
                 src = src.replace(
                     settingsregex,
-                    `$&emopacity:{name:"Emote Capacity",value:BrowserStorage.getEmotes(),skipauto:!0,type:"range",min:1,max:5,${settingsmatch}:1,filter:"default,app,mobile"},gemindeed:{name:"Gem Color 1",value:BrowserStorage.getGem1(),skipauto:true,type:"color",filter:"default,app,mobile"},gemindeed1:{name:"Gem Color 2",value:BrowserStorage.getGem2(),skipauto:true,type:"color",filter:"default,app,mobile"},`
+                    `$&emopacity:{name:"Emote Capacity",value:ClientStorage.getEmotes(),skipauto:!0,type:"range",min:1,max:5,${settingsmatch}:1,filter:"default,app,mobile"},gemindeed:{name:"Gem Color 1",value:ClientStorage.getGemColor1(),skipauto:true,type:"color",filter:"default,app,mobile"},gemindeed1:{name:"Gem Color 2",value:ClientStorage.getGemColor2(),skipauto:true,type:"color",filter:"default,app,mobile"},`
                 );
                 src = src.replace(titreg[0], `$&case"zinc":${titreg[1]}=t.createLinearGradient(0,0,0,i),${titreg[1]}.addColorStop(0,"#EEE"),${titreg[1]}.addColorStop(1,"#666");break;`);
                 src = src.replace(
@@ -684,270 +618,261 @@ function injectLoader() {
                 document.open();
                 document.write(src);
                 document.close();
-                let script = `
-                    let sbibt = document.createElement('script');
-                    sbibt.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/stationmodels.user.js';
-                    document.body.appendChild(sbibt);
-                    let script = document.createElement('script');
-                    script.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/weaponmodels.user.js';
-                    document.body.appendChild(script);
-                window.electronAPI.DiscordActive();
-                let lastValue = localStorage.getItem('richPresence');
-                const checkInterval = setInterval(() => {
-                    const currentValue = localStorage.getItem('richPresence');
-  
-                    if (currentValue !== lastValue) {
-                        lastValue = currentValue;
-                        window.electronAPI.DiscordActive();
-                    }
-                }, 300);
-                    let pattern = /,(\s*"blank"\s*!={1,2}\s*this\.custom\.badge)/;
+                let script = `let sbibt = document.createElement('script');
+sbibt.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/stationmodels.user.js';
+document.body.appendChild(sbibt);
+let script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/weaponmodels.user.js';
+document.body.appendChild(script);
+let pattern = /,(\\s*"blank"\\s*!={1,2}\\s*this\\.custom\\.badge)/;
 
-                Search: for (let i in window) try {
-                    let val = window[i].prototype;
-                    for (let j in val) {
-                        let func = val[j];
-                        if ("function" == typeof func && func.toString().match(pattern)) {
-                            val[j] = Function("return " + func.toString().replace(pattern, ", window.module.exports.settings.check('show_blank_badge') || $1"))();
-                            val.drawIcon = Function("return " + val.drawIcon.toString().replace(/}\s*else\s*{/, '} else if (this.icon !== "blank") {'))();
-                            let gl = window[i];
-                            for (let k in gl) {
-                                if ("function" == typeof gl[k] && gl[k].toString().includes(".table")) {
-                                    let oldF = gl[k];
-                                    gl[k] = function () {
-                                        let current = window.module.exports.settings.check('show_blank_badge');
-                                        if (this.showBlank !== current) {
-                                            for (let i in this.table) if (i.startsWith("blank")) delete this.table[i];
-                                            this.showBlank = current;
-                                        }
-                                        return oldF.apply(this, arguments)
-                                    };
-                                    break Search;
-                                }
-                            }
+Search: for (let i in window) try {
+    let val = window[i].prototype;
+    for (let j in val) {
+        let func = val[j];
+        if ("function" == typeof func && func.toString().match(pattern)) {
+            val[j] = Function("return " + func.toString().replace(pattern, ", window.module.exports.settings.check('show_blank_badge') || $1"))();
+            val.drawIcon = Function("return " + val.drawIcon.toString().replace(/}\\s*else\\s*{/, '} else if (this.icon !== "blank") {'))();
+            let gl = window[i];
+            for (let k in gl) {
+                if ("function" == typeof gl[k] && gl[k].toString().includes(".table")) {
+                    let oldF = gl[k];
+                    gl[k] = function() {
+                        let current = window.module.exports.settings.check('show_blank_badge');
+                        if (this.showBlank !== current) {
+                            for (let i in this.table)
+                                if (i.startsWith("blank")) delete this.table[i];
+                            this.showBlank = current;
                         }
-                    }
+                        return oldF.apply(this, arguments)
+                    };
+                    break Search;
                 }
-                catch (e) {}
-                    if (localStorage.getItem('selftag') === null) localStorage.selftag = true;
-                    function styleing() {
-                        var trainingelement = document.getElementById('training');
-                        var facebookIcon = document.querySelector('.social .sbg-facebook');
-                        var twitterIcon = document.querySelector('.social .sbg-twitter');
-                        if (twitterIcon != null) {
-                            twitterIcon.remove();
-                        }
-                        if (facebookIcon != null) {
-                            facebookIcon.remove();
-                        }
-                        if (trainingelement != null) {
-                            trainingelement.remove();
+            }
+        }
+    }
+}
+catch (e) {}
+if (localStorage.getItem('selftag') === null) localStorage.selftag = true;
+
+function styleing() {
+    var trainingelement = document.getElementById('training');
+    var facebookIcon = document.querySelector('.social .sbg-facebook');
+    var twitterIcon = document.querySelector('.social .sbg-twitter');
+    if (twitterIcon != null) {
+        twitterIcon.remove();
+    }
+    if (facebookIcon != null) {
+        facebookIcon.remove();
+    }
+    if (trainingelement != null) {
+        trainingelement.remove();
+    }
+}
+var styintrvl = setInterval(styleing, 100);
+setTimeout(() => clearInterval(styintrvl), 1000);
+setInterval(() => {
+    window.onbeforeunload = function() {};
+}, 1000);
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'x') {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        window.onbeforeunload = function() {};
+        window.electronAPI.sendMessage('start-browser');
+        return false;
+    } else if (e.ctrlKey && e.key === 'e') {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        document.querySelector('.social .sbg-gears').click();
+        return false;
+    } else if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        window.onbeforeunload = function() {};
+        window.electronAPI.sendMessage('quit');
+        return false;
+    }
+});
+let gemcolor = setInterval(() => {
+    let CrystalObject;
+    for (let i in window) {
+        try {
+            let val = window[i];
+            if ('function' == typeof val.prototype.createModel && val.prototype.createModel.toString().includes('Crystal')) {
+                CrystalObject = val;
+                clearInterval(gemcolor);
+                break;
+            }
+        } catch (e) {}
+    }
+
+    if (CrystalObject != null) {
+        let oldModel = CrystalObject.prototype.getModelInstance;
+
+        CrystalObject.prototype.getModelInstance = function() {
+            let res = oldModel.apply(this, arguments);
+            let color = window.ClientStorage.getGemColor1();
+            let specular = window.ClientStorage.getGemColor2();
+            this.material.color.set(color);
+            this.material.specular.set(specular);
+            return res;
+        };
+    }
+}, 100);
+if (localStorage.getItem('emopacity') !== null) {
+    let panel = setInterval(() => {
+        if (window.ChatPanel != null) {
+            clearInterval(panel);
+            ChatPanel.prototype.typed = new Function('return ' + ChatPanel.prototype.typed.toString().replace('>=4', '>=ClientStorage.getEmotes()'))();
+        }
+    }, 100);
+}
+let explolight = setInterval(() => {
+    if (window.Explosions != null) {
+        clearInterval(explolight);
+        let oldExplosion = Explosions.prototype.explode,
+            oldBlast = Explosions.prototype.blast;
+
+        let globalVal = oldExplosion
+            .toString()
+            .match(/this\\.([0OlI1\\.]+)\\.settings\\.check/)[1]
+            .split('.');
+
+        Explosions.prototype.isEnabled = function() {
+            let _this = this;
+            for (let i of globalVal) _this = _this[i];
+            return _this.settings.check('explolight');
+        };
+
+        Explosions.prototype.explode = function() {
+            return this.isEnabled() && oldExplosion.apply(this, arguments);
+        };
+
+        Explosions.prototype.blast = function() {
+            return this.isEnabled() && oldBlast.apply(this, arguments);
+        };
+    }
+}, 100);
+setTimeout(function() {
+    !(function() {
+        let e, t;
+        for (let n in window)
+            try {
+                let i = window[n].prototype;
+                if (null != i)
+                    for (let o in i) {
+                        let s = i[o];
+                        if ('function' == typeof s && s.toString().match(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/)) {
+                            let l;
+                            (e = n), (i[(t = Object.keys(i).find(e => 'function' == typeof i[e] && (l = (i[e].toString().match(/===(\\w+\\.[^,]+)\\.hue/) || [])[1])))] = Function('return ' + i[t].toString().replace(/(\\.id)/, '$1, this.selfShip = this.shipid == ' + l + '.id'))()), (i[o] = Function('return ' + s.toString().replace(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/, "$1 this.selfShip ? 'hsla(180,100%,75%,.75)' : $2"))());
                         }
                     }
-                    var styintrvl = setInterval(styleing, 100);
-                    setTimeout(() => clearInterval(styintrvl), 1000);
-                    setInterval(() => {
-                        window.onbeforeunload = function () {};
-                    }, 1000);
-                    document.addEventListener('keydown', function (e) {
-                        if (e.ctrlKey && e.key === 'x') {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            e.stopImmediatePropagation();
-                            window.onbeforeunload = function () {};
-                            window.electronAPI.sendMessage('start-browser');
-                            return false;
-                        } else if (e.ctrlKey && e.key === 'e') {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            e.stopImmediatePropagation();
-                            document.querySelector('.social .sbg-gears').click();
-                            return false;
-                        } else if (e.ctrlKey && e.key === 's') {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            e.stopImmediatePropagation();
-                            window.onbeforeunload = function () {};
-                            window.electronAPI.sendMessage('quit');
-                            return false;
-                        }
-                    });
-                    let gemcolor = setInterval(() => {
-                        let CrystalObject;
-                        for (let i in window) {
-                            try {
-                                let val = window[i];
-                                if ('function' == typeof val.prototype.createModel && val.prototype.createModel.toString().includes('Crystal')) {
-                                    CrystalObject = val;
-                                    clearInterval(gemcolor);
-                                    break;
-                                }
-                            } catch (e) {}
-                        }
-
-                        if (CrystalObject != null) {
-                            let oldModel = CrystalObject.prototype.getModelInstance;
-
-                            CrystalObject.prototype.getModelInstance = function () {
-                                let res = oldModel.apply(this, arguments);
-                                let color = window.BrowserStorage.getGem1();
-                                let specular = window.BrowserStorage.getGem2();
-                                this.material.color.set(color);
-                                this.material.specular.set(specular);
-                                return res;
-                            };
-                        }
-                    }, 100);
-                    if (localStorage.getItem('emopacity') !== null) {
-                    let panel = setInterval(() => {
-                        if (window.ChatPanel != null) {
-                            clearInterval(panel);
-                            ChatPanel.prototype.typed = new Function('return ' + ChatPanel.prototype.typed.toString().replace('>=4', '>=Browser.emotes()'))();
-                        }
-                    }, 100);
+            } catch (r) {}
+        let a = Object.getPrototypeOf(Object.values(Object.values(window.module.exports.settings).find(e => e && e.mode)).find(e => e && e.background)),
+            d = a.constructor,
+            c = d.prototype,
+            u = d.toString(),
+            hue = u.match(/(\\w+)\\.hue/)[1],
+            f = u.match(/(\\w+)\.add\\(/)[1],
+            h = u.match(/chat_bubble\\.(\\w+)/)[1];
+        ((d = Function('return ' + u.replace(/}$/, ', this.welcome || (this.ship_tag = new ' + e + '(Math.floor(360 * 0)), this.' + f + '.add(this.ship_tag.' + h + '))}'))()).prototype = c),
+        (d.prototype.constructor = d),
+        (a.constructor = d),
+        (d.prototype.updateShipTag = function() {
+            if (null != this.ship_tag) {
+                if (!this.shipKey) {
+                    this.shipKey = Object.keys(this).find(e => this[e] && this[e].ships);
+                    let e = this[this.shipKey];
+                    this.statusKey = Object.keys(e).find(t => e[t] && e[t].status);
                 }
-                    let explolight = setInterval(() => {
-                        if (window.Explosions != null) {
-                            clearInterval(explolight);
-                            let oldExplosion = Explosions.prototype.explode,
-                                oldBlast = Explosions.prototype.blast;
+                let n = this[hue],
+                    i = this[this.shipKey][this.statusKey];
+                this.ship_tag[t](n, n.names.get(i.status.id), i.status, i.instance);
+                let o = this.ship_tag[h].position;
+                (o.x = i.status.x), (o.y = i.status.y - 2 - i.type.radius), (o.z = 1), (this.ship_tag[h].visible = 'true' == localStorage.getItem('selftag') && i.status.alive && !i.status.guided);
+            }
+        });
+        let m = Object.keys(c).find(e => 'function' == typeof c[e] && c[e].toString().includes('render'));
+        d.prototype[m] = Function('return ' + d.prototype[m].toString().replace(/(\\w+\\.render)/, 'this.updateShipTag(), $1'))();
+        let g = function(...e) {
+            return window.module.exports.translate(...e);
+        };
+        for (let $ in window)
+            try {
+                let y = window[$];
+                if ('function' == typeof y.prototype.refused)
+                    for (let v in y.prototype) {
+                        let b = y.prototype[v];
+                        'function' == typeof b && b.toString().includes('new Scene') && (y.prototype[v] = Function('Scene', 't', 'return ' + b.toString())(d, g));
+                    }
+            } catch (_) {}
+    })();
+}, 1100);
+let MUIP = ModdingUIComponent.prototype,
+    hide = MUIP.hide,
+    set = ModdingMode.prototype.setUIComponent,
+    specs = ModdingUIComponent.toString()
+    .match(/,\\s*this.([^=]+?\\s*).add/)[1]
+    .split('.'),
+    getGroup = function(_this) {
+        for (let spec of specs) _this = _this[spec];
+        return _this;
+    },
+    isHidden = function(ui) {
+        return (!Array.isArray(ui.components) || ui.components.filter(i => ['round', 'box', 'player', 'text'].includes((i || {}).type)).length == 0) && !ui.clickable;
+    };
 
-                            let globalVal = oldExplosion
-                                .toString()
-                                .match(/this\\.([0OlI1\\.]+)\\.settings\\.check/)[1]
-                                .split('.');
+GenericMode.prototype.setUIComponent = ModdingMode.prototype.setUIComponent = function(ui) {
+    if (ui == null)
+        ui = {
+            visible: false,
+        };
+    if (!Array.isArray(ui.position)) ui.position = [];
+    let idealPos = [0, 0, 100, 100],
+        pos = [];
+    if (ui.visible != null && !ui.visible) pos = [0, 0, 0, 0];
+    else
+        for (let i = 0; i < idealPos.length; ++i) pos.push(ui.position[i] == null || isNaN(ui.position[i]) ? idealPos[i] : +ui.position[i]);
+    ui.position = pos;
+    if (!((ui.visible != null && !ui.visible) || isHidden(ui)) || (this.ui_components != null && this.ui_components[ui.id])) return set.call(this, ui);
+};
 
-                            Explosions.prototype.isEnabled = function () {
-                                let _this = this;
-                                for (let i of globalVal) _this = _this[i];
-                                return _this.settings.check('explolight');
-                            };
+MUIP.interfaceHidden = function() {
+    return (this.interface_hidden = !0), hide.apply(this, arguments);
+};
 
-                            Explosions.prototype.explode = function () {
-                                return this.isEnabled() && oldExplosion.apply(this, arguments);
-                            };
+MUIP.hide = function() {
+    if (!this.firstHide) {
+        this.shown = this.firstHide = true;
+    }
+    let shown = this.shown,
+        result = hide.apply(this, arguments);
+    if (shown) {
+        return setTimeout(
+            function(t) {
+                if (!t.shown) {
+                    getGroup(t).remove(t);
+                    if (t[specs[0]].mode.ui_components != null) delete t[specs[0]].mode.ui_components[t.component.id];
+                }
+            },
+            1e3,
+            this
+        );
+    }
+    return result;
+};
 
-                            Explosions.prototype.blast = function () {
-                                return this.isEnabled() && oldBlast.apply(this, arguments);
-                            };
-                        }
-                    }, 100);
-                    setTimeout(function () {
-                        !(function () {
-                            let e, t;
-                            for (let n in window)
-                                try {
-                                    let i = window[n].prototype;
-                                    if (null != i)
-                                        for (let o in i) {
-                                            let s = i[o];
-                                            if ('function' == typeof s && s.toString().match(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/)) {
-                                                let l;
-                                                (e = n), (i[(t = Object.keys(i).find(e => 'function' == typeof i[e] && (l = (i[e].toString().match(/===(\\w+\\.[^,]+)\\.hue/) || [])[1])))] = Function('return ' + i[t].toString().replace(/(\\.id)/, '$1, this.selfShip = this.shipid == ' + l + '.id'))()), (i[o] = Function('return ' + s.toString().replace(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/, "$1 this.selfShip ? 'hsla(180,100%,75%,.75)' : $2"))());
-                                            }
-                                        }
-                                } catch (r) {}
-                            let a = Object.getPrototypeOf(Object.values(Object.values(window.module.exports.settings).find(e => e && e.mode)).find(e => e && e.background)),
-                                d = a.constructor,
-                                c = d.prototype,
-                                u = d.toString(),
-                                hue = u.match(/(\\w+)\\.hue/)[1],
-                                f = u.match(/(\\w+)\.add\\(/)[1],
-                                h = u.match(/chat_bubble\\.(\\w+)/)[1];
-                            ((d = Function('return ' + u.replace(/}$/, ', this.welcome || (this.ship_tag = new ' + e + '(Math.floor(360 * 0)), this.' + f + '.add(this.ship_tag.' + h + '))}'))()).prototype = c),
-                                (d.prototype.constructor = d),
-                                (a.constructor = d),
-                                (d.prototype.updateShipTag = function () {
-                                    if (null != this.ship_tag) {
-                                        if (!this.shipKey) {
-                                            this.shipKey = Object.keys(this).find(e => this[e] && this[e].ships);
-                                            let e = this[this.shipKey];
-                                            this.statusKey = Object.keys(e).find(t => e[t] && e[t].status);
-                                        }
-                                        let n = this[hue],
-                                            i = this[this.shipKey][this.statusKey];
-                                        this.ship_tag[t](n, n.names.get(i.status.id), i.status, i.instance);
-                                        let o = this.ship_tag[h].position;
-                                        (o.x = i.status.x), (o.y = i.status.y - 2 - i.type.radius), (o.z = 1), (this.ship_tag[h].visible = 'true' == localStorage.getItem('selftag') && i.status.alive && !i.status.guided);
-                                    }
-                                });
-                            let m = Object.keys(c).find(e => 'function' == typeof c[e] && c[e].toString().includes('render'));
-                            d.prototype[m] = Function('return ' + d.prototype[m].toString().replace(/(\\w+\\.render)/, 'this.updateShipTag(), $1'))();
-                            let g = function (...e) {
-                                return window.module.exports.translate(...e);
-                            };
-                            for (let $ in window)
-                                try {
-                                    let y = window[$];
-                                    if ('function' == typeof y.prototype.refused)
-                                        for (let v in y.prototype) {
-                                            let b = y.prototype[v];
-                                            'function' == typeof b && b.toString().includes('new Scene') && (y.prototype[v] = Function('Scene', 't', 'return ' + b.toString())(d, g));
-                                        }
-                                } catch (_) {}
-                        })();
-                    }, 1100);
-                    let MUIP = ModdingUIComponent.prototype,
-                        hide = MUIP.hide,
-                        set = ModdingMode.prototype.setUIComponent,
-                        specs = ModdingUIComponent.toString()
-                            .match(/,\\s*this.([^=]+?\\s*).add/)[1]
-                            .split('.'),
-                        getGroup = function (_this) {
-                            for (let spec of specs) _this = _this[spec];
-                            return _this;
-                        },
-                        isHidden = function (ui) {
-                            return (!Array.isArray(ui.components) || ui.components.filter(i => ['round', 'box', 'player', 'text'].includes((i || {}).type)).length == 0) && !ui.clickable;
-                        };
-
-                    GenericMode.prototype.setUIComponent = ModdingMode.prototype.setUIComponent = function (ui) {
-                        if (ui == null)
-                            ui = {
-                                visible: false,
-                            };
-                        if (!Array.isArray(ui.position)) ui.position = [];
-                        let idealPos = [0, 0, 100, 100],
-                            pos = [];
-                        if (ui.visible != null && !ui.visible) pos = [0, 0, 0, 0];
-                        else for (let i = 0; i < idealPos.length; ++i) pos.push(ui.position[i] == null || isNaN(ui.position[i]) ? idealPos[i] : +ui.position[i]);
-                        ui.position = pos;
-                        if (!((ui.visible != null && !ui.visible) || isHidden(ui)) || (this.ui_components != null && this.ui_components[ui.id])) return set.call(this, ui);
-                    };
-
-                    MUIP.interfaceHidden = function () {
-                        return (this.interface_hidden = !0), hide.apply(this, arguments);
-                    };
-
-                    MUIP.hide = function () {
-                        if (!this.firstHide) {
-                            this.shown = this.firstHide = true;
-                        }
-                        let shown = this.shown,
-                            result = hide.apply(this, arguments);
-                        if (shown) {
-                            return setTimeout(
-                                function (t) {
-                                    if (!t.shown) {
-                                        getGroup(t).remove(t);
-                                        if (t[specs[0]].mode.ui_components != null) delete t[specs[0]].mode.ui_components[t.component.id];
-                                    }
-                                },
-                                1e3,
-                                this
-                            );
-                        }
-                        return result;
-                    };
-
-                    let key = Object.keys(MUIP).find(key => 'function' == typeof MUIP[key] && MUIP[key].toString().includes('this.shown=!0')),
-                        show = MUIP[key];
-                    MUIP[key] = function () {
-                        if (isHidden(this.component)) return this.hide();
-                        let group = getGroup(this);
-                        if (!this.shown) return !group.children.includes(this) && group.add(this, this.component.position), show.call(this, arguments);
-                    };
-                `;
+let key = Object.keys(MUIP).find(key => 'function' == typeof MUIP[key] && MUIP[key].toString().includes('this.shown=!0')),
+    show = MUIP[key];
+MUIP[key] = function() {
+    if (isHidden(this.component)) return this.hide();
+    let group = getGroup(this);
+    if (!this.shown) return !group.children.includes(this) && group.add(this, this.component.position), show.call(this, arguments);
+};`;
                 let scripts = document.createElement('script');
                 scripts.innerHTML = script;
                 setTimeout(() => {
@@ -1007,45 +932,18 @@ function ECPinjectLoader() {
             let newnewrgs = newrgs[0].match(/[iI10OlL]{4,6}/g);
             src = src.replace(
                 /for\(f=document\.queryselectorall\("\.option\s*input\[type=range\]"\),\s*i=function\(e\)\{.*?,1\)\}\)\}\}/gis,
-                `for (f = document.querySelectorAll(".option input[type=range], .option input[type=color]"), i = function(e) {return function(i) {if(i.type === "range"){if (i.id === "emopacity") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = parseInt(i.value, 10), e.updateSettings(s, !0)})} else {if (i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = "0" === i.value ? t("Off") : Math.round(50 * i.value) + " %", e.updateSettings(s, !0)}), i.dispatchEvent(new Event("input")), "sounds" === i.id) return i.addEventListener("change", function (t) {return e.${newnewrgs[0]}.${newnewrgs[1]}.beep(4 + .2 * Math.random(), 1)})}} else if (i.type === "color") {if (i.id === "gemcolor1") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = ECPStorage.getGemColor1();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = ECPStorage.getGemColor1();} else if (i.id === "gemcolor2") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = ECPStorage.getGemColor2();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = ECPStorage.getGemColor2();}else if (i.id === "shpcolorr") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = null;x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = null;}}}}`
+                `for (f = document.querySelectorAll(".option input[type=range], .option input[type=color]"), i = function(e) {return function(i) {if(i.type === "range"){if (i.id === "emopacity") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = parseInt(i.value, 10), e.updateSettings(s, !0)})} else {if (i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = "0" === i.value ? t("Off") : Math.round(50 * i.value) + " %", e.updateSettings(s, !0)}), i.dispatchEvent(new Event("input")), "sounds" === i.id) return i.addEventListener("change", function (t) {return e.${newnewrgs[0]}.${newnewrgs[1]}.beep(4 + .2 * Math.random(), 1)})}} else if (i.type === "color") {if (i.id === "gemcolor1") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = ClientStorage.getGemColor1();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = ClientStorage.getGemColor1();} else if (i.id === "gemcolor2") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = ClientStorage.getGemColor2();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = ClientStorage.getGemColor2();}else if (i.id === "shpcolorr") {i.addEventListener("input", function (s) {return x = document.querySelector("#" + i.getAttribute("id") + "_value"), x.innerText = i.value, e.updateSettings(s, !0);});i.addEventListener("change", function (s) {i.value = ClientStorage.getShipColor();x = document.querySelector("#" + i.getAttribute("id") + "_value").innerText = i.value;});i.value = ClientStorage.getShipColor();}}}}`
             );
-            const carbonMatch = src.match(/t\.prototype\.buildCarbonMaterial.*?emissiveMap:([iI10OlL]{5})/);
-            const carbonEmissiveMap = carbonMatch[0].match(/emissiveMap\:[iI10OlL]{5}/);
-            const mapregex = src.match(/t\.prototype\.buildCarbonMaterial.*?map\:[iI10OlL]{5}/);
-            const mapvalue = mapregex[0].match(/[iI10OlL]{5}/);
-            const emissiveregex = src.match(/emissive\:[iI10OlL]{5}/);
-            const finishfunc = `t.prototype.fullbolor=function(){return this.material=new THREE.MeshPhongMaterial({map:${mapvalue},bumpMap:${mapvalue},specular:1052688,shininess:50,bumpScale:.1,color:(this.shipcolor != undefined) ? this.shipcolor : JSON.parse(localStorage.getItem('shpcolorr')),${emissiveregex}.hsvToRgbHex(this.hue, 1, 1),${carbonEmissiveMap}})},`;
-            const finishcolor =
-                'case"shpcolorr":let color;if (this.laser.split("!")[1] == null){color = JSON.parse(localStorage.getItem("shpcolorr"))}else {color = this.laser.split("!")[1]}; for(s=t.createLinearGradient(0,0,0,i),h=Math.min(10,this.size/10),n=a=0,u=h-1;a<=u;n=a+=1)s.addColorStop(n/h,color),s.addColorStop((n+1)/h,window.adjustColor(color, 53));for(l=t.createLinearGradient(0,0,0,i),l.addColorStop(0,window.adjustColor(color, 20)),l.addColorStop(.1,window.adjustColor(color, 53)),n=o=0,d=h-1;o<=d;n=o+=1)l.addColorStop((n+.5)/h,color),l.addColorStop(Math.min(1,(n+1.5)/h),window.adjustColor(color, 53));break;';
-            const finishcheese = 'case "shpcolorr":this.fullbolor();break;';
-            const ivalue = src.match(/(.)=this\.[iI10OlL]{5}\.names\.getcustom\(.\.[iI10OlL]{5}\.status\.id\)/i)[1];
-            src = src.replace(/this\.type=.\.getUint/, 'this.type = this.ggcustom?.laser.includes("!") ? this.ggcustom.laser.split("!")[0] : t.getUint');
-            src = src.replace(
-                /(.)=new\s*([iI10OlL]{5})\(this\.([iI10OlL]{5})\.mode\.([iI10OlL]{5})\.ships_by_code\[t\.([iI10OlL]{5})\.status\.type],(.)\/360\)/i,
-                `this.shipycolor = ${ivalue}?.laser?.includes("!") ? ${ivalue}.laser.split("!")[1] : null, $1=new $2(this.$3.mode.$4.ships_by_code[t.$5.status.type],$6/360, null,null, this.shipycolor)`
-            );
-            src = src.replace(/t\.prototype\.([iI10OlL]{5})=function\((.)\)\{var\s*(.,.,.,.,.,.,.);(return\s*.=new)/i, 't.prototype.$1=function($2){var $3,custom,laserColor;$4');
-            src = src.replace(/(.=new\s*[iI10OlL]{5}\(this\.[iI10OlL]{5}\.mode\.[iI10OlL]{5}\.ships_by_code\[.\.code\],.\/360)\),/i, '$1,null,null, laserColor),');
-            const ggez = src.match(/,.=.\.hue,this\.[iI10OlL]{5}\.mode/)[0].match(/([iI10OlL]{5})/)[0];
-            src = src.replace(/,.\.read\((.)\),/i, `$&custom = this.${ggez}.names.getCustom($1.getUint8(1)),laserColor = custom?.laser?.includes("!") ? custom.laser.split("!")[1] : null,`);
-            src = src.replace(/(this\.[iI10OlL]{5}=function\(\)\{function t\(t,e,i,s)(\)\{)var (.*?)if\(/, '$1,color$2var $3this.shipcolor = color != null ? color : null;if(');
-            const ggezy = src.match(/(this\.laserticles\.[iI10OlL]{5}\.[iI10OlL]{5}\.)mode\.anonymous_ships/)[1];
-            src = src.replace(/this\.laserticles\s*=\s*.,/, `$&this.ggcustom = ${ggezy}names.getCustom(this.shipid),`);
-            src = src.replace(/case\s*"carbon"\s*:\s*this\.buildCarbonMaterial\(\);break;\n?/, '$&' + finishcheese);
-            src = src.replace(/t\.prototype\.buildCarbonMaterial\s*=\s*function\s*\([^)]*\)\s*{[^}]*}\)},/, '$&' + finishfunc);
-            src = src.replace(/case\s*"titanium"\s*:(s=t.createLinearGradient\(0,0,0,i\),[\s\S]*?);break;/, '$&' + finishcolor);
-            src = src.replace('"carbon"===this.finish', '"carbon"===this.finish || "shpcolorr"===this.finish');
-            src = src.replace('null!=e&&null!=this.client_version&&(e.innerText="Client Version: "+this.client_version)', `null != e && (e.innerText = 'Client Version: StandAlone 1.1.0')`);
+            src = src.replace('null!=e&&null!=this.client_version&&(e.innerText="Client Version: "+this.client_version)', `null != e && (e.innerText = 'Client Version: Steam 1.1.0')`);
             const titreg = src.match(/case\s*"titanium"\s*:(\w+)=t.createLinearGradient\(0,0,0,i\),[\s\S]*?;break;/);
             const defreg = src.match(/default:(\w+)=t\.createLinearGradient\(0,0,0,i\),\w+\.addColorStop\(0,"#EEE"\),\w+\.addColorStop\(1,"#666"\)/);
             src = src.replace('https://starblast.io/modsinfo.json', 'https://raw.githubusercontent.com/officialtroller/starblast-things/refs/heads/main/modsinfo.js');
             src = src.replace(/this\.hue,\.5,1/g, 'this.hue,1,1');
+            src = src.replace(/this\.hue,\.5,\.5/g, 'this.hue,1,.5');
             src = src.replace('||(this.icon="https://starblast.io/ecp/gamepedia.png")', '||(this.icon=this.icon)');
             src = src.replace('NEW!', ' ');
             src = src.replace(/\.toUpperCase\(\)/g, '');
             src = src.replace(/text-transform:\s*uppercase;/gim, '');
-            src = src.replace(/case"star":.*?break;/g, `$&case"blank":t.fillStyle="hsla(200, 0%, 0%, 0)";break;`);
-            src = src.replace(/case\s*"pmf"\s*:\s*this\.icon\s*=\s*".*?";\s*break;/, '$&case "troller": this.icon = "https://officialtroller.github.io/src/img/logo.png";break;');
             src = src.replace(/default:t.fillStyle="hsl\(200,50%,20%\)"/, 'default:t.fillStyle = "hsl(50,100%,50%)"');
             src = src.replace(
                 /default:t\.fillStyle="hsl\(50,100%,70%\)",t\.fillText\("S",e\/2,i\/2\)/,
@@ -1056,7 +954,7 @@ function ECPinjectLoader() {
                 defreg[0],
                 `default:${defreg[1]}=t.createLinearGradient(0,0,0,i),${defreg[1]}.addColorStop(0,"hsl(0,100%,50%)"),${defreg[1]}.addColorStop(.5,"hsl(60,100%,50%)"),${defreg[1]}.addColorStop(.5,"hsl(120,100%,50%)"),${defreg[1]}.addColorStop(1,"hsl(180,100%,50%)")`
             );
-            src = src.replace('classList.add("shown")', '$&, window.ECPStorage.enableScrollEvents()');
+            src = src.replace('classList.add("shown")', '$&, window.ClientStorage.enableScrollEvents("ecp")');
             src = src.replace(/window\.parent\.postMessage\("([^"]*)","\*"\)/gim, 'window.electronAPI.sendMessage("$1")');
 
             const end_time = performance.now();
@@ -1064,146 +962,192 @@ function ECPinjectLoader() {
             document.open();
             document.write(src);
             document.close();
-            let script = `
-                let sbibt = document.createElement('script');
-                    sbibt.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/stationmodels.user.js';
-                    document.body.appendChild(sbibt);
-                    let script = document.createElement('script');
-                    script.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/weaponmodels.user.js';
-                    document.body.appendChild(script);
-                    if (localStorage.getItem('selftag') === null) localStorage.selftag = true;
-                    window.module.exports.settings.parameters.selftag = { name: 'Self Ship Tag', value: !0, skipauto: !0, filter: 'default,app,mobile' };
-                    window.module.exports.settings.parameters.richPresence = { name: 'Discord Activity Button', value: true, skipauto: !0, filter: 'default,app,mobile' };
-                    window.module.exports.settings.parameters.show_blank_badge = { name: 'Blank Badges', value: !0, skipauto: !0, filter: 'default,app,mobile' };
-                    window.module.exports.settings.parameters.emopacity = { name:"Emote Capacity",value:ECPStorage.getEmotes(),skipauto:!0,type:"range",min:1,max:5,filter:"default,app,mobile"};
-                    window.module.exports.settings.parameters.gemcolor1 = { name: 'Gem Color 1', value: ECPStorage.getGemColor1(), skipauto: true, type: 'color', filter: 'default,app,mobile' };
-                    window.module.exports.settings.parameters.gemcolor2 = { name: 'Gem Color 2', value: ECPStorage.getGemColor2(), skipauto: true, type: 'color', filter: 'default,app,mobile' };
-                if (localStorage.getItem('emopacity') !== null) {
-                let panel = setInterval(() => {
-                    if (window.ChatPanel != null) {
-                        clearInterval(panel);
-                        window.ChatPanel.prototype.typed = new Function('return ' + window.ChatPanel.prototype.typed.toString().replace('>=4', '>=ECPStorage.getEmotes()'))();
-                    }
-                }, 100);
+            let script = `let sbibt = document.createElement('script');
+sbibt.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/stationmodels.user.js';
+document.body.appendChild(sbibt);
+let script = document.createElement('script');
+script.src = 'https://cdn.jsdelivr.net/gh/officialtroller/starblast-things/weaponmodels.user.js';
+document.body.appendChild(script);
+if (localStorage.getItem('selftag') === null) localStorage.selftag = true;
+window.module.exports.settings.parameters.selftag = {
+    name: 'Self Ship Tag',
+    value: !0,
+    skipauto: !0,
+    filter: 'default,app,mobile'
+};
+window.module.exports.settings.parameters.show_blank_badge = {
+    name: 'Blank Badges',
+    value: !0,
+    skipauto: !0,
+    filter: 'default,app,mobile'
+};
+window.module.exports.settings.parameters.emopacity = {
+    name: "Emote Capacity",
+    value: ClientStorage.getEmotes(),
+    skipauto: !0,
+    type: "range",
+    min: 1,
+    max: 5,
+    filter: "default,app,mobile"
+};
+window.module.exports.settings.parameters.gemcolor1 = {
+    name: 'Gem Color 1',
+    value: ClientStorage.getGemColor1(),
+    skipauto: true,
+    type: 'color',
+    filter: 'default,app,mobile'
+};
+window.module.exports.settings.parameters.gemcolor2 = {
+    name: 'Gem Color 2',
+    value: ClientStorage.getGemColor2(),
+    skipauto: true,
+    type: 'color',
+    filter: 'default,app,mobile'
+};
+let pattern = /,(\\s*"blank"\\s*!={1,2}\\s*this\\.custom\\.badge)/;
+
+Search: for (let i in window) try {
+    let val = window[i].prototype;
+    for (let j in val) {
+        let func = val[j];
+        if ("function" == typeof func && func.toString().match(pattern)) {
+            val[j] = Function("return " + func.toString().replace(pattern, ", window.module.exports.settings.check('show_blank_badge') || $1"))();
+            val.drawIcon = Function("return " + val.drawIcon.toString().replace(/}\\s*else\\s*{/, '} else if (this.icon !== "blank") {'))();
+            let gl = window[i];
+            for (let k in gl) {
+                if ("function" == typeof gl[k] && gl[k].toString().includes(".table")) {
+                    let oldF = gl[k];
+                    gl[k] = function() {
+                        let current = window.module.exports.settings.check('show_blank_badge');
+                        if (this.showBlank !== current) {
+                            for (let i in this.table)
+                                if (i.startsWith("blank")) delete this.table[i];
+                            this.showBlank = current;
+                        }
+                        return oldF.apply(this, arguments)
+                    };
+                    break Search;
+                }
             }
-                window.electronAPI.DiscordActive();
-                let lastValue = localStorage.getItem('richPresence');
-                const checkInterval = setInterval(() => {
-                    const currentValue = localStorage.getItem('richPresence');
-  
-                    if (currentValue !== lastValue) {
-                        lastValue = currentValue;
-                        window.electronAPI.DiscordActive();
+        }
+    }
+}
+catch (e) {}
+if (localStorage.getItem('emopacity') !== null) {
+    let panel = setInterval(() => {
+        if (window.ChatPanel != null) {
+            clearInterval(panel);
+            window.ChatPanel.prototype.typed = new Function('return ' + window.ChatPanel.prototype.typed.toString().replace('>=4', '>=ClientStorage.getEmotes()'))();
+        }
+    }, 100);
+}
+let gemcolor = setInterval(() => {
+    let CrystalObject;
+    for (let i in window) {
+        try {
+            let val = window[i];
+            if ('function' == typeof val.prototype.createModel && val.prototype.createModel.toString().includes('Crystal')) {
+                CrystalObject = val;
+                clearInterval(gemcolor);
+                break;
+            }
+        } catch (e) {}
+    }
+
+    if (CrystalObject != null) {
+        let oldModel = CrystalObject.prototype.getModelInstance;
+
+        CrystalObject.prototype.getModelInstance = function() {
+            let res = oldModel.apply(this, arguments);
+            let color = window.ClientStorage.getGemColor1();
+            let specular = window.ClientStorage.getGemColor2();
+            this.material.color.set(color);
+            this.material.specular.set(specular);
+            return res;
+        };
+    }
+}, 100);
+setTimeout(function() {
+    !(function() {
+        let e, t;
+        for (let n in window)
+            try {
+                let i = window[n].prototype;
+                if (null != i)
+                    for (let o in i) {
+                        let s = i[o];
+                        if ('function' == typeof s && s.toString().match(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/)) {
+                            let l;
+                            (e = n), (i[(t = Object.keys(i).find(e => 'function' == typeof i[e] && (l = (i[e].toString().match(/===(\\w+\\.[^,]+)\\.hue/) || [])[1])))] = Function('return ' + i[t].toString().replace(/(\\.id)/, '$1, this.selfShip = this.shipid == ' + l + '.id'))()), (i[o] = Function('return ' + s.toString().replace(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/, "$1 this.selfShip ? 'hsla(180,100%,75%,.75)' : $2"))());
+                        }
                     }
-                }, 300);
-                    let gemcolor = setInterval(() => {
-                    let CrystalObject;
-                    for (let i in window) {
-                        try {
-                            let val = window[i];
-                            if ('function' == typeof val.prototype.createModel && val.prototype.createModel.toString().includes('Crystal')) {
-                                CrystalObject = val;
-                                clearInterval(gemcolor);
-                                break;
-                            }
-                        } catch (e) {}
+            } catch (r) {}
+        let a = Object.getPrototypeOf(Object.values(Object.values(window.module.exports.settings).find(e => e && e.mode)).find(e => e && e.background)),
+            d = a.constructor,
+            c = d.prototype,
+            u = d.toString(),
+            hue = u.match(/(\\w+)\\.hue/)[1],
+            f = u.match(/(\\w+)\\.add\\(/)[1],
+            h = u.match(/chat_bubble\\.(\\w+)/)[1];
+        ((d = Function('return ' + u.replace(/}$/, ', this.welcome || (this.ship_tag = new ' + e + '(Math.floor(360 * 0)), this.' + f + '.add(this.ship_tag.' + h + '))}'))()).prototype = c),
+        (d.prototype.constructor = d),
+        (a.constructor = d),
+        (d.prototype.updateShipTag = function() {
+            if (null != this.ship_tag) {
+                if (!this.shipKey) {
+                    this.shipKey = Object.keys(this).find(e => this[e] && this[e].ships);
+                    let e = this[this.shipKey];
+                    this.statusKey = Object.keys(e).find(t => e[t] && e[t].status);
+                }
+                let n = this[hue],
+                    i = this[this.shipKey][this.statusKey];
+                this.ship_tag[t](n, n.names.get(i.status.id), i.status, i.instance);
+                let o = this.ship_tag[h].position;
+                (o.x = i.status.x), (o.y = i.status.y - 2 - i.type.radius), (o.z = 1), (this.ship_tag[h].visible = 'true' == localStorage.getItem('selftag') && i.status.alive && !i.status.guided);
+            }
+        });
+        let m = Object.keys(c).find(e => 'function' == typeof c[e] && c[e].toString().includes('render'));
+        d.prototype[m] = Function('return ' + d.prototype[m].toString().replace(/(\\w+\\.render)/, 'this.updateShipTag(), $1'))();
+        let g = function(...e) {
+            return window.module.exports.translate(...e);
+        };
+        for (let $ in window)
+            try {
+                let y = window[$];
+                if ('function' == typeof y.prototype.refused)
+                    for (let v in y.prototype) {
+                        let b = y.prototype[v];
+                        'function' == typeof b && b.toString().includes('new Scene') && (y.prototype[v] = Function('Scene', 't', 'return ' + b.toString())(d, g));
                     }
+            } catch (_) {}
+    })();
+}, 5000);
+let explolight = setInterval(() => {
+    if (window.Explosions != null) {
+        clearInterval(explolight);
+        let oldExplosion = Explosions.prototype.explode,
+            oldBlast = Explosions.prototype.blast;
 
-                    if (CrystalObject != null) {
-                        let oldModel = CrystalObject.prototype.getModelInstance;
+        let globalVal = oldExplosion
+            .toString()
+            .match(/this\\.([0OlI1\\.]+)\\.settings\\.check/)[1]
+            .split('.');
 
-                        CrystalObject.prototype.getModelInstance = function () {
-                            let res = oldModel.apply(this, arguments);
-                            let color = window.ECPStorage.getGemColor1();
-                            let specular = window.ECPStorage.getGemColor2();
-                            this.material.color.set(color);
-                            this.material.specular.set(specular);
-                            return res;
-                        };
-                    }
-                }, 100);
-                setTimeout(function () {
-                    !(function () {
-                        let e, t;
-                        for (let n in window)
-                            try {
-                                let i = window[n].prototype;
-                                if (null != i)
-                                    for (let o in i) {
-                                        let s = i[o];
-                                        if ('function' == typeof s && s.toString().match(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/)) {
-                                            let l;
-                                            (e = n), (i[(t = Object.keys(i).find(e => 'function' == typeof i[e] && (l = (i[e].toString().match(/===(\\w+\\.[^,]+)\\.hue/) || [])[1])))] = Function('return ' + i[t].toString().replace(/(\\.id)/, '$1, this.selfShip = this.shipid == ' + l + '.id'))()), (i[o] = Function('return ' + s.toString().replace(/([^,]+)("hsla\\(180,100%,75%,\\.75\\)")/, "$1 this.selfShip ? 'hsla(180,100%,75%,.75)' : $2"))());
-                                        }
-                                    }
-                            } catch (r) {}
-                        let a = Object.getPrototypeOf(Object.values(Object.values(window.module.exports.settings).find(e => e && e.mode)).find(e => e && e.background)),
-                            d = a.constructor,
-                            c = d.prototype,
-                            u = d.toString(),
-                            hue = u.match(/(\\w+)\\.hue/)[1],
-                            f = u.match(/(\\w+)\\.add\\(/)[1],
-                            h = u.match(/chat_bubble\\.(\\w+)/)[1];
-                        ((d = Function('return ' + u.replace(/}$/, ', this.welcome || (this.ship_tag = new ' + e + '(Math.floor(360 * 0)), this.' + f + '.add(this.ship_tag.' + h + '))}'))()).prototype = c),
-                            (d.prototype.constructor = d),
-                            (a.constructor = d),
-                            (d.prototype.updateShipTag = function () {
-                                if (null != this.ship_tag) {
-                                    if (!this.shipKey) {
-                                        this.shipKey = Object.keys(this).find(e => this[e] && this[e].ships);
-                                        let e = this[this.shipKey];
-                                        this.statusKey = Object.keys(e).find(t => e[t] && e[t].status);
-                                    }
-                                    let n = this[hue],
-                                        i = this[this.shipKey][this.statusKey];
-                                    this.ship_tag[t](n, n.names.get(i.status.id), i.status, i.instance);
-                                    let o = this.ship_tag[h].position;
-                                    (o.x = i.status.x), (o.y = i.status.y - 2 - i.type.radius), (o.z = 1), (this.ship_tag[h].visible = 'true' == localStorage.getItem('selftag') && i.status.alive && !i.status.guided);
-                                }
-                            });
-                        let m = Object.keys(c).find(e => 'function' == typeof c[e] && c[e].toString().includes('render'));
-                        d.prototype[m] = Function('return ' + d.prototype[m].toString().replace(/(\\w+\\.render)/, 'this.updateShipTag(), $1'))();
-                        let g = function (...e) {
-                            return window.module.exports.translate(...e);
-                        };
-                        for (let $ in window)
-                            try {
-                                let y = window[$];
-                                if ('function' == typeof y.prototype.refused)
-                                    for (let v in y.prototype) {
-                                        let b = y.prototype[v];
-                                        'function' == typeof b && b.toString().includes('new Scene') && (y.prototype[v] = Function('Scene', 't', 'return ' + b.toString())(d, g));
-                                    }
-                            } catch (_) {}
-                    })();
-                }, 5000);
-                let explolight = setInterval(() => {
-                    if (window.Explosions != null) {
-                        clearInterval(explolight);
-                        let oldExplosion = Explosions.prototype.explode,
-                            oldBlast = Explosions.prototype.blast;
+        Explosions.prototype.isEnabled = function() {
+            let _this = this;
+            for (let i of globalVal) _this = _this[i];
+            return _this.settings.check('explolight');
+        };
 
-                        let globalVal = oldExplosion
-                            .toString()
-                            .match(/this\\.([0OlI1\\.]+)\\.settings\\.check/)[1]
-                            .split('.');
+        Explosions.prototype.explode = function() {
+            return this.isEnabled() && oldExplosion.apply(this, arguments);
+        };
 
-                        Explosions.prototype.isEnabled = function () {
-                            let _this = this;
-                            for (let i of globalVal) _this = _this[i];
-                            return _this.settings.check('explolight');
-                        };
-
-                        Explosions.prototype.explode = function () {
-                            return this.isEnabled() && oldExplosion.apply(this, arguments);
-                        };
-
-                        Explosions.prototype.blast = function () {
-                            return this.isEnabled() && oldBlast.apply(this, arguments);
-                        };
-                    }
-                }, 100);
-            `;
+        Explosions.prototype.blast = function() {
+            return this.isEnabled() && oldBlast.apply(this, arguments);
+        };
+    }
+}, 100);`;
             let scriptelm = document.createElement('script');
             scriptelm.innerHTML = script;
             setTimeout(() => {

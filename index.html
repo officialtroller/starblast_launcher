@@ -1,244 +1,665 @@
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>STARBLAST.IO</title>
-    <style>
-        @font-face {
-            font-family: 'SBGlyphs';
-            src: url('https://starblast.data.neuronality.com/fonts/starblast-glyphs.ttf?v=1');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        .sbg {
-            display: inline-block;
-            font: normal normal normal 14px/1 SBGlyphs;
-            font-size: inherit;
-            text-rendering: auto;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .sbg-world:before {
-            content: '\0032';
-        }
-
-        .sbg-leave:before {
-            content: '\00b3';
-        }
-
-        body {
-            background: #000;
-            background-image: url('./sb_background.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center center;
-            background-attachment: fixed;
-            display: flex;
-            justify-content: center;
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-
-        #logo {
-            overflow: hidden;
-            text-align: center;
-            position: fixed;
-            top: 0;
-            opacity: 1;
-            transition: all 3s;
-            z-index: 2;
-            width: 30%;
-        }
-
-        #logo img {
-            width: 100%;
-            animation: fadeIn 1s ease-out;
-        }
-
-        .header {
-            position: fixed;
-            top: 35%;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 4em;
-            font-weight: bold;
-            background: white;
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 1s ease-out 0.5s backwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>STARBLAST.IO</title>
+        <style>
+            @font-face {
+                font-family: 'ROG LyonsType';
+                font-style: normal;
+                font-weight: 400;
+                src: url('https://fonts.cdnfonts.com/s/91615/ROGLyonsTypeRegular3.woff') format('woff');
             }
 
-            to {
+            body {
+                background: #000;
+                background-image: url('./background.png');
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center center;
+                background-attachment: fixed;
+                display: flex;
+                justify-content: center;
+                margin: 0;
+                font-family: Arial, sans-serif;
+                user-select: none;
+            }
+
+            #logo {
+                overflow: hidden;
+                text-align: center;
+                position: fixed;
+                top: 0;
                 opacity: 1;
-                transform: translateY(0);
+                z-index: 2;
+                width: 50vh;
+                min-width: 150px;
             }
-        }
 
-        .all {
-            position: relative;
-            width: 50%;
-            height: 35%;
-            display: flex;
-            gap: 1.5em;
-            top: 50%;
-            justify-content: center;
-            align-items: center;
-        }
+            #logo img {
+                width: 100%;
+                animation: fadeIn 1s ease-out;
+            }
 
-        .box {
-            flex: 1;
-            min-width: 150px;
-            aspect-ratio: 1;
-            padding: 1.5em;
-            background: rgba(47, 79, 79, 0.7);
-            border: 2px solid rgba(123, 191, 191, 0.7);
-            box-shadow: 0 0 5px rgba(47, 79, 79, 0.7);
-            backdrop-filter: blur(7.1px);
-            -webkit-backdrop-filter: blur(7.1px);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+            .header {
+                position: fixed;
+                top: 35%;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 4em;
+                font-weight: bold;
+                background: white;
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                text-shadow: 0 4px 12px rgb(255, 255, 255);
+                animation: fadeIn 1s ease-out 0.5s backwards;
+                font-family: 'ROG LyonsType';
+                pointer-events: none;
+            }
 
-        .box:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-        }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
 
-        .box h2 {
-            margin: 0;
-            font-size: 1.5em;
-            background: linear-gradient(135deg, #60a5fa 0%, #818cf8 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transition: all 0.3s ease;
-        }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
 
-        .box:hover h2 {
-            transform: scale(1.3) translateY(-35px);
-        }
+            @keyframes bounce {
+                0%,
+                100% {
+                    transform: translate(-50%, -60px) scale(1);
+                }
+                50% {
+                    transform: translate(-50%, -50px) scale(0.8);
+                }
+            }
 
-        .box i {
-            font-size: 80px;
-            background: linear-gradient(135deg, #60a5fa 0%, #2e3680 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            opacity: 0;
-        }
+            .all {
+                height: 100%;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                overflow: hidden;
+            }
 
-        .box:hover i {
-            animation: fadeIn 0.5s ease-out;
-            opacity: 1;
-        }
+            .selects {
+                position: absolute;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                width: 80vh;
+                height: 50vh;
+                gap: 20%;
+                top: 50%;
+                overflow: visible;
+            }
 
-        .box img {
-            background: linear-gradient(135deg, #60a5fa 0%, #2e3680 100%);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            opacity: 0;
-        }
+            .box {
+                position: relative;
+            }
 
-        .box:hover img {
-            animation: fadeIn 0.5s ease-out;
-            opacity: 1;
-        }
+            .box span {
+                display: inline-block;
+                font-family: 'ROG LyonsType';
+                color: white;
+                font-size: 50px;
+                text-shadow: 0px 0px 10px white;
+                transition: all 0.2s ease;
+            }
 
-        .quit {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            height: 5%;
-            width: 10%;
-            background: linear-gradient(135deg, #60a5fa 0%, #818cf8 100%);
-            background-clip: text;
-            background-color: #60a5fa60;
-            backdrop-filter: blur(7.1px);
-            -webkit-backdrop-filter: blur(7.1px);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration-color: transparent;
-            text-align: center;
-            align-self: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            user-select: none;
-            transition: transform 0.5s linear;
-        }
+            .box:hover span {
+                text-shadow: 10px -15px 10px white;
+                transform: translateY(-10%);
+                cursor: pointer;
+            }
 
-        .quit:hover {
-            cursor: pointer;
-        }
+            #ecp:hover span {
+                color: #cb5454;
+                text-shadow: 10px -15px 10px rgb(205, 55, 55);
+            }
+            #browser {
+                top: 20%;
+            }
 
-        .quit:active {
-            transform: scale(0.85);
-        }
+            #steam {
+                top: -20%;
+            }
 
-        .quit::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: -1;
-            background: linear-gradient(135deg, #60a5fa60 0%, #818cf860 100%);
-            backdrop-filter: blur(7.1px);
-            -webkit-backdrop-filter: blur(7.1px);
-            box-shadow: 0 0 5px #60a5fa60, 0 0 5px #818cf860;
-            border-top-right-radius: 8px;
-        }
+            .triangle-svg {
+                position: absolute;
+                width: 50px;
+                height: 50px;
+                top: -10px;
+                left: 50%;
+                transform: translate(-50%, 0) scale(0);
+                pointer-events: none;
+                z-index: 10;
+                filter: drop-shadow(0px 0px 15px rgba(255, 255, 255, 0.8)) drop-shadow(0px 5px 20px rgba(255, 255, 255, 0.4));
+                transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.3s ease-out, transform 0.3s ease-out;
+            }
 
-        .quit:hover::before {
-            cursor: pointer;
-            background: linear-gradient(135deg, #818cf860 0%, #60a5fa60 100%);
-        }
-    </style>
-</head>
+            .triangle-svg.active {
+                transform: translate(-50%, 0) scale(1);
+            }
 
-<body>
-    <div id="logo"><img src="logo.svg" /></div>
-    <h1 class="header">Choose Version</h1>
-    <div class="all">
-        <div class="box" id="browser" onclick="window.electronAPI.sendMessage('start-browser')">
-            <h2>Browser</h2>
-            <i class="sbg sbg-world"></i>
+            .triangle-svg.bouncing {
+                animation: bounce 0.8s ease-in-out infinite;
+            }
+
+            @keyframes bounce {
+                0%,
+                100% {
+                    transform: translate(-50%, 0) scale(1);
+                }
+                50% {
+                    transform: translate(-50%, 10px) scale(0.8);
+                }
+            }
+            .quit {
+                display: flex;
+                position: fixed;
+                bottom: 2%;
+                left: 2%;
+                height: 4%;
+                width: 7%;
+                align-items: center;
+                cursor: pointer;
+            }
+
+            .quit svg {
+                opacity: 0;
+                transform: translateX(0);
+                transition: all 0.3s ease-in-out;
+            }
+
+            .quit:hover svg {
+                opacity: 1;
+                transform: translateX(260%);
+            }
+
+            .quit span {
+                font-family: 'ROG LyonsType';
+                color: white;
+                font-size: 2em;
+            }
+
+            .settings {
+                display: flex;
+                position: fixed;
+                left: 2%;
+                top: 2%;
+                height: 20%;
+                width: 12%;
+                pointer-events: none;
+            }
+
+            .settings svg {
+                transition: all 0.3s ease-in-out;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                pointer-events: auto;
+            }
+            .settings svg:hover {
+                transform: rotate(360deg);
+            }
+
+            .settings .settings-tab {
+                display: none;
+                flex-direction: column;
+                gap: 5%;
+                align-items: center;
+                background-color: #7d7d7d75;
+                border: 2px solid rgb(68, 98, 185);
+                box-shadow: 0 0 10px rgb(68, 98, 185);
+                border-radius: 12px;
+                height: 70%;
+                width: 100%;
+                position: absolute;
+                left: 80px;
+                text-align: center;
+                backdrop-filter: blur(4.1px);
+                padding: 4%;
+                pointer-events: auto;
+            }
+
+            .settings .settings-tab::before {
+                content: '';
+                position: absolute;
+                left: -25px;
+                top: 5%;
+                border: 12px solid transparent;
+                border-right-color: rgb(68, 98, 185);
+            }
+
+            .settings .settings-tab div {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+            }
+
+            .settings .settings-tab div span {
+                align-content: center;
+            }
+
+            label {
+                margin-left: 4%;
+            }
+
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 60px;
+                height: 34px;
+            }
+
+            .switch input {
+                display: none;
+            }
+
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                -webkit-transition: 0.4s;
+                transition: 0.4s;
+                border-radius: 20px;
+            }
+
+            .slider:before {
+                position: absolute;
+                content: '';
+                height: 26px;
+                width: 26px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                -webkit-transition: 0.4s;
+                transition: 0.4s;
+                border-radius: 50%;
+            }
+
+            input:checked + .slider {
+                background-color: #00ff00;
+            }
+
+            input:focus + .slider {
+                box-shadow: 0 0 1px hsl(200, 60%, 30%);
+            }
+
+            input:checked + .slider:before {
+                -webkit-transform: translateX(26px);
+                -ms-transform: translateX(26px);
+                transform: translateX(26px);
+            }
+            input[type='text'] {
+                border: none;
+                border-bottom: 2px solid black;
+                background-color: transparent;
+                outline: 0;
+                width: 85%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <audio src="https://starblast.data.neuronality.com/music/civilisation.mp3" loop autoplay style="display: none"></audio>
+        <div id="logo"><img src="logo.svg" /></div>
+        <h1 class="header">SELECT PLATFORM</h1>
+
+        <div class="all">
+            <div class="settings">
+                <svg width="50px" height="50px" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="white">
+                    <path
+                        d="M9.1 4.4L8.6 2H7.4l-.5 2.4-.7.3-2-1.3-.9.8 1.3 2-.2.7-2.4.5v1.2l2.4.5.3.8-1.3 2 .8.8 2-1.3.8.3.4 2.3h1.2l.5-2.4.8-.3 2 1.3.8-.8-1.3-2 .3-.8 2.3-.4V7.4l-2.4-.5-.3-.8 1.3-2-.8-.8-2 1.3-.7-.2zM9.4 1l.5 2.4L12 2.1l2 2-1.4 2.1 2.4.4v2.8l-2.4.5L14 12l-2 2-2.1-1.4-.5 2.4H6.6l-.5-2.4L4 13.9l-2-2 1.4-2.1L1 9.4V6.6l2.4-.5L2.1 4l2-2 2.1 1.4.4-2.4h2.8zm.6 7c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zM8 9c.6 0 1-.4 1-1s-.4-1-1-1-1 .4-1 1 .4 1 1 1z" />
+                </svg>
+                <div class="settings-tab">
+                    <div class="music">
+                        <span>Background Music</span>
+                        <label class="switch">
+                            <input type="checkbox" id="music-check" />
+                            <div class="slider"></div>
+                        </label>
+                    </div>
+                    <input type="text" id="music-input" placeholder="music link" />
+                    <div class="reduce-motion">
+                        <span>Reduce Motion</span>
+                        <label class="switch">
+                            <input type="checkbox" />
+                            <div class="slider"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="selects">
+                <svg width="50" height="50" viewBox="0 0 50 50" class="triangle-svg" id="triangle">
+                    <path d="M 25 45 L 5 5 L 45 5 Z" fill="white" stroke="white" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+                </svg>
+
+                <div class="box" id="browser" onclick="window.electronAPI.sendMessage('start-browser')">
+                    <span>Browser</span>
+                </div>
+                <div class="box" id="ecp" onclick="window.electronAPI.sendMessage('start-ecp')">
+                    <span>ECP</span>
+                </div>
+                <div class="box" id="steam" onclick="window.electronAPI.sendMessage('start-steam')">
+                    <span>Steam</span>
+                </div>
+            </div>
         </div>
-        <div class="box" id="ecp" onclick="window.electronAPI.sendMessage('start-ecp')">
-            <h2>ECP</h2>
-            <img src="data:image/png;base64,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"
-                alt="" />
+        <div class="quit" onclick="window.electronAPI.sendMessage('quit-app')">
+            <svg fill="white" width="50px" height="50px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M4,12a1,1,0,0,0,1,1h7.59l-2.3,2.29a1,1,0,0,0,0,1.42,1,1,0,0,0,1.42,0l4-4a1,1,0,0,0,.21-.33,1,1,0,0,0,0-.76,1,1,0,0,0-.21-.33l-4-4a1,1,0,1,0-1.42,1.42L12.59,11H5A1,1,0,0,0,4,12ZM17,2H7A3,3,0,0,0,4,5V8A1,1,0,0,0,6,8V5A1,1,0,0,1,7,4H17a1,1,0,0,1,1,1V19a1,1,0,0,1-1,1H7a1,1,0,0,1-1-1V16a1,1,0,0,0-2,0v3a3,3,0,0,0,3,3H17a3,3,0,0,0,3-3V5A3,3,0,0,0,17,2Z" />
+            </svg>
+            <span>Exit</span>
         </div>
-        <div class="box" id="steam"
-            onclick="window.electronAPI.sendMessage('start-steam'), console.log('Starting Steam...')">
-            <h2>Steam</h2>
-            <img src="https://www.vectorlogo.zone/logos/steampowered/steampowered-icon.svg" alt="" />
-        </div>
-    </div>
-    <div class="quit" onclick="window.electronAPI.sendMessage('quit-app')">Quit<i style="margin-left: 2px"
-            class="sbg sbg-leave"></i></div>
-</body>
 
+        <script>
+            const triangle = document.getElementById('triangle');
+            const boxes = document.querySelectorAll('.box');
+            const selects = document.querySelector('.selects');
+            let currentHoveredBox = null;
+            let hideTimeout = null;
+
+            boxes.forEach(box => {
+                box.addEventListener('mouseenter', function () {
+                    currentHoveredBox = box;
+
+                    if (hideTimeout) {
+                        clearTimeout(hideTimeout);
+                        hideTimeout = null;
+                    }
+
+                    const boxRect = box.getBoundingClientRect();
+                    const selectsRect = selects.getBoundingClientRect();
+                    const relativeLeft = boxRect.left - selectsRect.left + boxRect.width / 2;
+                    const relativeTop = boxRect.top - selectsRect.top - 100;
+
+                    triangle.style.left = relativeLeft + 'px';
+                    triangle.style.top = relativeTop + 'px';
+                    triangle.classList.add('active', 'bouncing');
+                });
+
+                box.addEventListener('mouseleave', function () {
+                    currentHoveredBox = null;
+
+                    hideTimeout = setTimeout(() => {
+                        if (currentHoveredBox === null) {
+                            triangle.classList.remove('active', 'bouncing');
+                        }
+                    }, 500);
+                });
+            });
+
+            selects.addEventListener('mouseleave', function () {
+                currentHoveredBox = null;
+
+                hideTimeout = setTimeout(() => {
+                    triangle.classList.remove('active', 'bouncing');
+                }, 500);
+            });
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('DOM loaded');
+                const DEFAULT_MUSIC_URL = 'https://starblast.data.neuronality.com/music/civilisation.mp3';
+                const checkbox = document.getElementById('music-check');
+                const input = document.getElementById('music-input');
+                input.style.display = checkbox.checked ? 'block' : 'none';
+
+                checkbox.addEventListener('change', () => {
+                    input.style.display = checkbox.checked ? 'block' : 'none';
+                });
+                const settingsContainer = document.querySelector('.settings');
+                const settingsTab = document.querySelector('.settings-tab');
+                const settingsSvg = document.querySelector('.settings svg');
+                let hideTimeout;
+
+                if (settingsContainer && settingsTab && settingsSvg) {
+                    settingsSvg.addEventListener('mouseenter', () => {
+                        clearTimeout(hideTimeout);
+                        settingsTab.style.display = 'flex';
+                    });
+
+                    settingsContainer.addEventListener('mouseleave', () => {
+                        hideTimeout = setTimeout(() => {
+                            settingsTab.style.display = 'none';
+                        }, 100);
+                    });
+
+                    settingsContainer.addEventListener('mouseenter', () => {
+                        clearTimeout(hideTimeout);
+                    });
+                }
+
+                const musicCheckbox = document.getElementById('music-check');
+                const musicInput = document.getElementById('music-input');
+
+                if (musicCheckbox && musicInput) {
+                    musicInput.style.display = musicCheckbox.checked ? 'block' : 'none';
+
+                    musicCheckbox.addEventListener('change', () => {
+                        musicInput.style.display = musicCheckbox.checked ? 'block' : 'none';
+
+                        if (!musicCheckbox.checked) {
+                            stopBackgroundMusic();
+                        } else {
+                            const url = musicInput.value.trim() || DEFAULT_MUSIC_URL;
+                            playBackgroundMusic(url);
+                        }
+                    });
+                }
+
+                let errorMessage = null;
+
+                const SUPPORTED_FORMATS = ['mp3', 'wav', 'ogg', 'webm', 'm4a', 'aac', 'flac'];
+
+                function getFileExtension(url) {
+                    try {
+                        const urlObj = new URL(url);
+                        const pathname = urlObj.pathname;
+                        const pathWithoutQuery = pathname.split('?')[0];
+                        const extension = pathWithoutQuery.split('.').pop().toLowerCase();
+                        return extension;
+                    } catch (e) {
+                        return null;
+                    }
+                }
+
+                function showError(message) {
+                    removeError();
+
+                    errorMessage = document.createElement('div');
+                    errorMessage.className = 'music-error';
+                    errorMessage.textContent = message;
+                    errorMessage.style.cssText = `
+                color: #ff4444;
+                background-color: rgba(255, 68, 68, 0.1);
+                border: 1px solid #ff4444;
+                border-radius: 8px;
+                padding: 8px;
+                margin-top: 5px;
+                font-size: 12px;
+                text-align: center;
+                animation: fadeIn 0.3s ease-in-out;
+            `;
+
+                    musicInput.parentElement.appendChild(errorMessage);
+
+                    setTimeout(removeError, 5000);
+                }
+
+                function removeError() {
+                    if (errorMessage && errorMessage.parentElement) {
+                        errorMessage.remove();
+                        errorMessage = null;
+                    }
+                }
+
+                function getAudioElement() {
+                    return document.querySelector('audio');
+                }
+
+                function stopBackgroundMusic() {
+                    const audio = getAudioElement();
+                    if (audio) {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    }
+                }
+
+                function playBackgroundMusic(url) {
+                    if (!url || url.trim() === '') {
+                        return;
+                    }
+
+                    const extension = getFileExtension(url);
+
+                    if (!extension || !SUPPORTED_FORMATS.includes(extension)) {
+                        showError(`Unsupported format. Supported: ${SUPPORTED_FORMATS.join(', ')}`);
+                        return;
+                    }
+
+                    removeError();
+
+                    const audio = getAudioElement();
+
+                    if (!audio) {
+                        showError('No audio element found in DOM');
+                        return;
+                    }
+
+                    audio.src = url;
+                    audio.loop = true;
+                    audio.volume = 0.5;
+
+                    const newAudio = audio.cloneNode(true);
+                    audio.parentNode.replaceChild(newAudio, audio);
+
+                    newAudio.addEventListener('error', e => {
+                        let errorMsg = 'Error loading music';
+
+                        if (newAudio.error) {
+                            switch (newAudio.error.code) {
+                                case MediaError.MEDIA_ERR_ABORTED:
+                                    errorMsg = 'Loading was aborted';
+                                    break;
+                                case MediaError.MEDIA_ERR_NETWORK:
+                                    errorMsg = 'Network error while loading';
+                                    break;
+                                case MediaError.MEDIA_ERR_DECODE:
+                                    errorMsg = 'File could not be decoded';
+                                    break;
+                                case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+                                    errorMsg = 'File format not supported or URL invalid';
+                                    break;
+                            }
+                        }
+
+                        showError(errorMsg);
+                        stopBackgroundMusic();
+                    });
+
+                    newAudio.play().catch(err => {
+                        showError('URL invalid, please try again');
+                        console.error('Play error:', err);
+                    });
+                }
+
+                if (musicInput) {
+                    musicInput.addEventListener('change', () => {
+                        if (musicCheckbox.checked) {
+                            const url = musicInput.value.trim() || DEFAULT_MUSIC_URL;
+                            playBackgroundMusic(url);
+                        }
+                    });
+
+                    musicInput.addEventListener('keypress', e => {
+                        if (e.key === 'Enter' && musicCheckbox.checked) {
+                            const url = musicInput.value.trim() || DEFAULT_MUSIC_URL;
+                            playBackgroundMusic(url);
+                        }
+                    });
+                }
+
+                const reduceMotionCheckbox = document.querySelector('.reduce-motion input[type="checkbox"]');
+                const styleElement = document.createElement('style');
+                styleElement.id = 'reduce-motion-style';
+                document.head.appendChild(styleElement);
+
+                function updateReduceMotion(enabled) {
+                    if (enabled) {
+                        styleElement.textContent = `
+                    *, *::before, *::after {
+                        animation-duration: 0s !important;
+                        animation-delay: 0s !important;
+                        transition-duration: 0s !important;
+                        transition-delay: 0s !important;
+                    }
+                `;
+                    } else {
+                        styleElement.textContent = '';
+                    }
+                }
+
+                if (reduceMotionCheckbox) {
+                    updateReduceMotion(reduceMotionCheckbox.checked);
+
+                    reduceMotionCheckbox.addEventListener('change', () => {
+                        updateReduceMotion(reduceMotionCheckbox.checked);
+                    });
+                }
+
+                function saveSettings() {
+                    localStorage.setItem('musicEnabled', musicCheckbox.checked);
+                    localStorage.setItem('musicUrl', musicInput.value);
+                    localStorage.setItem('reduceMotion', reduceMotionCheckbox.checked);
+                }
+
+                function loadSettings() {
+                    const musicEnabled = localStorage.getItem('musicEnabled') === 'true';
+                    const musicUrl = localStorage.getItem('musicUrl') || '';
+                    const reduceMotion = localStorage.getItem('reduceMotion') === 'true';
+
+                    if (musicCheckbox) {
+                        musicCheckbox.checked = musicEnabled;
+                        musicInput.style.display = musicEnabled ? 'block' : 'none';
+                    }
+
+                    if (musicInput) {
+                        musicInput.value = musicUrl;
+                        if (musicEnabled) {
+                            const url = musicUrl || DEFAULT_MUSIC_URL;
+                            playBackgroundMusic(url);
+                        } else {
+                            stopBackgroundMusic();
+                        }
+                    }
+
+                    if (reduceMotionCheckbox) {
+                        reduceMotionCheckbox.checked = reduceMotion;
+                        updateReduceMotion(reduceMotion);
+                    }
+                }
+
+                loadSettings();
+
+                if (musicCheckbox) musicCheckbox.addEventListener('change', saveSettings);
+                if (musicInput) musicInput.addEventListener('change', saveSettings);
+                if (reduceMotionCheckbox) reduceMotionCheckbox.addEventListener('change', saveSettings);
+            });
+        </script>
+    </body>
 </html>
